@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "555494173799",
+    "firebase_url": "https://appquiznchill.firebaseio.com",
+    "project_id": "appquiznchill",
+    "storage_bucket": "appquiznchill.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555494173799:android:4e92fa30371a2fe641f8c2",
+        "android_client_info": {
+          "package_name": "dk.appproject.quiznchill"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "555494173799-near3g3gfm8d8a8ke1qeaijoamk88h9t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4BSFYvaUkjE9vW9MtoOKr5bmPOkiGVMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "555494173799-near3g3gfm8d8a8ke1qeaijoamk88h9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
