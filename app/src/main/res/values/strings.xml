@@ -7,6 +7,9 @@
     <string name="Name">QUIZ n CHILL</string>
     <string name="ChooseQuiz">Choose Quiz</string>
     <string name="ChooseOpponents">Choose Opponents</string>
-    <string name="Personale">Personale</string>
+    <string name="Personal">Personal</string>
     <string name="Public">Public</string>
+    <string name="appTitle">Quiz N\' Chill</string>
+    <string name="btnStartQuiz">Start Quiz!</string>
+    <string name="btnCreateQuiz">Create new quiz!</string>
 </resources>
