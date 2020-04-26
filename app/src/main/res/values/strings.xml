@@ -2,4 +2,7 @@
     <string name="app_name">QuizNChill</string>
     <string name="facebook_app_id">521035771914571</string>
     <string name="fb_login_protocol_scheme">fb521035771914571</string>
+    <string name="appTitle">Quiz N\' Chill</string>
+    <string name="btnStartQuiz">Start Quiz!</string>
+    <string name="btnCreateQuiz">Create new quiz!</string>
 </resources>
