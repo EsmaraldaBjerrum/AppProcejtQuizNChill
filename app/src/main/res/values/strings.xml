@@ -2,4 +2,11 @@
     <string name="app_name">QuizNChill</string>
     <string name="facebook_app_id">521035771914571</string>
     <string name="fb_login_protocol_scheme">fb521035771914571</string>
+    <string name="Welcome">Welcome to</string>
+    <string name="LetsGo">Let\'s go!</string>
+    <string name="Name">QUIZ n CHILL</string>
+    <string name="ChooseQuiz">Choose Quiz</string>
+    <string name="ChooseOpponents">Choose Opponents</string>
+    <string name="Personale">Personale</string>
+    <string name="Public">Public</string>
 </resources>

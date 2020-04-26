@@ -4,6 +4,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".StartQuizActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStartQuizOpponents"
+        android:layout_width="330dp"
+        android:layout_height="170dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartQuizChooseOpponets"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tvStartQuizChooseQuiz"
+        android:layout_width="203dp"
+        android:layout_height="50dp"
+        android:text="@string/ChooseQuiz"
+        android:textColor="@color/colorHeadline"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.038" />
+
+    <TextView
+        android:id="@+id/tvStartQuizChooseOpponets"
+        android:layout_width="275dp"
+        android:layout_height="49dp"
+        android:text="@string/ChooseOpponents"
+        android:textColor="@color/colorHeadline"
+        app:autoSizeTextType="uniform"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvStartQuizQuizzes"
+        app:layout_constraintVertical_bias="0.059" />
+
+    <Button
+        android:id="@+id/btnStartQuizPersonale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:layout_marginBottom="166dp"
+        android:background="@color/colorHeadline"
+        android:text="@string/Personale"
+        app:layout_constraintBottom_toTopOf="@+id/rvStartQuizQuizzes"
+        app:layout_constraintEnd_toStartOf="@+id/btnStartQuizPublic"
+        app:layout_constraintHorizontal_bias="0.477"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartQuizChooseQuiz"
+        app:layout_constraintVertical_bias="0.052" />
+
+    <Button
+        android:id="@+id/btnStartQuizPersonale3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="64dp"
+        android:background="@color/colorHeadline"
+        android:text="@string/LetsGo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvStartQuizOpponents" />
+
+    <Button
+        android:id="@+id/btnStartQuizPublic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="21dp"
+        android:layout_marginEnd="84dp"
+        android:layout_marginRight="84dp"
+        android:layout_marginBottom="166dp"
+        android:background="@color/colorHeadline"
+        android:text="@string/Public"
+        app:layout_constraintBottom_toTopOf="@+id/rvStartQuizQuizzes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartQuizChooseQuiz"
+        app:layout_constraintVertical_bias="0.052" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStartQuizQuizzes"
+        android:layout_width="330dp"
+        android:layout_height="170dp"
+        android:background="@color/colorText"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvStartQuizChooseQuiz"
+        app:layout_constraintVertical_bias="0.171" />
 </androidx.constraintlayout.widget.ConstraintLayout>
