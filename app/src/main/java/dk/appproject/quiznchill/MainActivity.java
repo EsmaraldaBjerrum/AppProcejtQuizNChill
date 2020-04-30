@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
-        test = findViewById(R.id.textView);
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button login = findViewById(R.id.btnLogin);
+        Button login = findViewById(R.id.btnMainOK);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,13 +128,13 @@ public class MainActivity extends AppCompatActivity {
         //Firebase database ADDING
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Question Q1 = new Question("HVem er en hat?", "Din mor", "Bente B", "Dronning M");
-        Question Q2 = new Question("HVem er en kat?", "Hunden", "Katten", "Klatten");
+
+
 
         Question [] goodQ = {
-                Q1,
-                Q2
         };
+
+
 
         // Create a new user with a first and last name
         Map<String, Object> personaleQuiz = new HashMap<>();
