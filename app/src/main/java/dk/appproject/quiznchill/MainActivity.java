@@ -128,37 +128,6 @@ public class MainActivity extends AppCompatActivity {
         //Firebase database ADDING
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
-
-
-        Question [] goodQ = {
-        };
-
-
-
-        // Create a new user with a first and last name
-        Map<String, Object> personaleQuiz = new HashMap<>();
-        personaleQuiz.put("name", "De gode spørgsmål");
-        personaleQuiz.put("questions", Arrays.asList(goodQ));
-        db.collection("PersonaleQuizzes").document("De gode spørgsmål").set(personaleQuiz);
-
-        // Add a new document with a generated ID
-        db.collection("PersonaleQuizzes")
-                .add(personaleQuiz)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-
-
         //FIREBASE GETTING
         DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

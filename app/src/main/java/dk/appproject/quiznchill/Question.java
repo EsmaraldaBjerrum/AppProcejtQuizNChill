@@ -26,6 +26,13 @@ public class Question {
     @Expose
     private List<String> incorrectAnswers = null;
 
+    public Question(String category, String question, String correctAnswer, List<String> incorrectAnswers) {
+        this.category = category;
+        this.question = question;
+        this.correctAnswer = correctAnswer;
+        this.incorrectAnswers = incorrectAnswers;
+    }
+
     public String getCategory() {
         return category;
     }
