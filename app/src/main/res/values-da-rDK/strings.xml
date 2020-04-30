@@ -6,4 +6,12 @@
     <string name="btnStartQuiz">Start Quiz!</string>
     <string name="btnCreateQuiz">Opret ny quiz!</string>
     <string name="questionHeader">"Spørgsmål: "</string>
+    <string name="AddedQuestionToast">Spørgsmålet er tilføjet</string>
+    <string name="opret_ny_quiz">Create new quiz</string>
+    <string name="quiz_navn">Quiz name</string>
+    <string name="forkert_svar_hint">First wrong answer</string>
+    <string name="det_rigtige_svar_hint">Correct answer</string>
+    <string name="tilf_j_sp_rgsm_l">Add question</string>
+    <string name="sp_rgsm_l">Question</string>
+    <string name="ok">Ok</string>
 </resources>

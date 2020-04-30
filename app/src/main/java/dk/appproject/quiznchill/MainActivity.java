@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
-        test = findViewById(R.id.textView);
-
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
         //facebookLogin.setReadPermissions("email", "public_profile", "user_friends");
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button login = findViewById(R.id.btnLogin);
+        Button login = findViewById(R.id.btnFacebookLogin);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,37 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Firebase database ADDING
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Question Q1 = new Question("HVem er en hat?", "Din mor", "Bente B", "Dronning M");
-        Question Q2 = new Question("HVem er en kat?", "Hunden", "Katten", "Klatten");
-
-        Question [] goodQ = {
-                Q1,
-                Q2
-        };
-
-        // Create a new user with a first and last name
-        Map<String, Object> personaleQuiz = new HashMap<>();
-        personaleQuiz.put("name", "De gode spørgsmål");
-        personaleQuiz.put("questions", Arrays.asList(goodQ));
-        db.collection("PersonaleQuizzes").document("De gode spørgsmål").set(personaleQuiz);
-
-        // Add a new document with a generated ID
-        db.collection("PersonaleQuizzes")
-                .add(personaleQuiz)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
-
 
         //FIREBASE GETTING
         DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");

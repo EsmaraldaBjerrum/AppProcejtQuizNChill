@@ -1,15 +1,30 @@
 <resources>
     <string name="app_name">QuizNChill</string>
     <string name="facebook_app_id">521035771914571</string>
-    <string name="fb_login_protocol_scheme">fb521035771914571</string>
-    <string name="Welcome">Welcome to</string>
-    <string name="LetsGo">Let\'s go!</string>
-    <string name="Name">QUIZ n CHILL</string>
-    <string name="ChooseQuiz">Choose Quiz</string>
-    <string name="ChooseOpponents">Choose Opponents</string>
-    <string name="Personal">Personal</string>
-    <string name="Public">Public</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb521035771914571</string>
+    <string name="Welcome" translatable="false">Welcome to</string>
+    <string name="LetsGo" translatable="false">Let\'s go!</string>
+    <string name="Name" translatable="false">QUIZ n CHILL</string>
+    <string name="ChooseQuiz" translatable="false">Choose Quiz</string>
+    <string name="ChooseOpponents" translatable="false">Choose Opponents</string>
+    <string name="Personal" translatable="false">Personal</string>
+    <string name="Public" translatable="false">Public</string>
     <string name="appTitle">Quiz N\' Chill</string>
     <string name="btnStartQuiz">Start Quiz!</string>
     <string name="btnCreateQuiz">Create new quiz!</string>
+    <string name="questionHeader">"Question: "</string>
+    <string name="AddedQuestionToast">The question is added</string>
+    <string name="opret_ny_quiz">Create new quiz</string>
+    <string name="quiz_navn">Quiz name</string>
+    <string name="quiz_navn_hint" translatable="false">Quiz name</string>
+    <string name="sp_rgsm_l_hint" translatable="false">Question</string>
+    <string name="forkert_svar_hint">First wrong answer</string>
+    <string name="rigtig_svar" translatable="false">Correct answer</string>
+    <string name="det_rigtige_svar_hint">Correct answer</string>
+    <string name="forkert_svar" translatable="false">Wrong answer</string>
+    <string name="tilf_j_sp_rgsm_l">Add question</string>
+    <string name="sp_rgsm_l">Question</string>
+    <string name="ok">Ok</string>
+    <string name="v_du_tabte_quizzen" translatable="false">You lost the quiz</string>
+    <string name="yay_du_vandt_quizzen" translatable="false">You won the quiz!</string>
 </resources>
