@@ -12,10 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +28,7 @@ public class CreateQuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_quiz);
         final List<Question> questions = new ArrayList<>();
+
 
         final EditText edtQuizName = findViewById(R.id.edtTxtCreateQuizQuizName);
         final EditText edtQuestion = findViewById(R.id.edtTxtCreateQuizQuestion);
@@ -69,7 +66,7 @@ public class CreateQuizActivity extends AppCompatActivity {
            @Override
            public void onClick(View v) {
 
-            databaseService.AddQuizToDb(questions,edtQuizName.getText().toString());
+            databaseService.addQuizToDb(questions,edtQuizName.getText().toString(), true);
                Log.d(TAG, "Questions added");
                finish();
            }

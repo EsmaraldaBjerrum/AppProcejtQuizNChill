@@ -53,7 +53,7 @@
         android:layout_marginTop="21dp"
         android:layout_marginBottom="166dp"
         android:background="@color/colorHeadline"
-        android:text="@string/Personale"
+        android:text="@string/Personal"
         app:layout_constraintBottom_toTopOf="@+id/rvStartQuizQuizzes"
         app:layout_constraintEnd_toStartOf="@+id/btnStartQuizPublic"
         app:layout_constraintHorizontal_bias="0.477"

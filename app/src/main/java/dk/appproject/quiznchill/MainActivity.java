@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private static final String TAG = MainActivity.class.getSimpleName();
     private Opponents opponents = new Opponents();
-    ApiService service;
+    private ApiService service;
     private ServiceConnection serviceConnection;
     private List<Quiz> quizzes = new ArrayList<Quiz>();
 
@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
+        setupConnectionToService();
+        bindService(new Intent(MainActivity.this, ApiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 //Get wordService and set up text views etc.
                 service = (((ApiService.ServiceBinder) binder).getService());
+                service.getQuiz();
                 service.getQuiz();
             }
 
