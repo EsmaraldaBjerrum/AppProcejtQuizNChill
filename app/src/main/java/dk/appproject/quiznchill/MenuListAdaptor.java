@@ -32,12 +32,9 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
 
     @Override
     public MenuListAdaptor.ListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        //View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycleritem_menu, parent, false);
-
-        //ListViewHolder viewHolder = new ListViewHolder(v, onlistItemListenerLocal);
-        //return viewHolder;
-        return null;
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycleritem_menu, parent, false);
+        ListViewHolder viewHolder = new ListViewHolder(v, onlistItemListenerLocal);
+        return viewHolder;
     }
 
     @Override

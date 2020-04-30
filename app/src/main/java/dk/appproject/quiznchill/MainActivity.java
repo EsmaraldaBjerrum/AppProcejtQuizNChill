@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ListActivity;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -25,7 +24,11 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -38,6 +41,18 @@ import com.google.gson.GsonBuilder;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,21 +79,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
-        /*
-         FirebaseUser user = firebaseAuth.getCurrentUser();
-         if(user != null)
-            {
-                Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                startActivity(intent);
-            }
-         */
-
-
-        setupConnectionToService();
-        Intent intent = new Intent(MainActivity.this, ApiService.class);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        startService(intent);
-
+        test = findViewById(R.id.textView);
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
@@ -88,8 +89,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 handleFacebookToken(loginResult.getAccessToken());
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                sendGraphRequest(user);
             }
 
             @Override
@@ -103,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnOK = findViewById(R.id.btnMenuOK);
-        btnOK.setOnClickListener(new View.OnClickListener() {
+
+        Button login = findViewById(R.id.btnLogin);
+
+        login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -125,6 +126,57 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        //Firebase database ADDING
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Question Q1 = new Question("HVem er en hat?", "Din mor", "Bente B", "Dronning M");
+        Question Q2 = new Question("HVem er en kat?", "Hunden", "Katten", "Klatten");
+
+        Question [] goodQ = {
+                Q1,
+                Q2
+        };
+
+        // Create a new user with a first and last name
+        Map<String, Object> personaleQuiz = new HashMap<>();
+        personaleQuiz.put("name", "De gode spørgsmål");
+        personaleQuiz.put("questions", Arrays.asList(goodQ));
+        db.collection("PersonaleQuizzes").document("De gode spørgsmål").set(personaleQuiz);
+
+        // Add a new document with a generated ID
+        db.collection("PersonaleQuizzes")
+                .add(personaleQuiz)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
+
+
+        //FIREBASE GETTING
+        DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     //Kald for venner
@@ -221,6 +273,4 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }
     }
-
-
 }
