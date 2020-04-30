@@ -47,7 +47,7 @@
         app:layout_constraintVertical_bias="0.059" />
 
     <Button
-        android:id="@+id/btnStartQuizPersonale"
+        android:id="@+id/btnStartQuizPersonal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="21dp"
@@ -62,7 +62,7 @@
         app:layout_constraintVertical_bias="0.052" />
 
     <Button
-        android:id="@+id/btnStartQuizPersonale3"
+        android:id="@+id/btnStartQuizOK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"

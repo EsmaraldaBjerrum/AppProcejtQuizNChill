@@ -210,8 +210,7 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 //Get wordService and set up text views etc.
                 service = (((ApiService.ServiceBinder) binder).getService());
-                service.getQuiz();
-                service.getQuiz();
+
             }
 
             public void onServiceDisconnected(ComponentName className) {

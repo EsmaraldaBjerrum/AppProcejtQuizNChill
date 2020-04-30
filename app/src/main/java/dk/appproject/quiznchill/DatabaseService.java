@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -43,6 +44,7 @@ public class DatabaseService extends Service {
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
+    public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
 
     public void addQuizToDb(List<Question> questions, String quizName, boolean personal)
     {
@@ -59,14 +61,15 @@ public class DatabaseService extends Service {
     //Inspiration from https://firebase.google.com/docs/firestore/quickstart#java_8
     public void getPersonalQuizzes()
     {
-        final List<Map<String, Object>> quizzes = new ArrayList<>();
+        PersonalQuizzes.clear();
         db.collection("PersonalQuizzes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        quizzes.add(document.getData());
+                        PersonalQuizzes.add(document.getData());
                     }
+                    sendBroadcast("new-quizzes");
                 }
             }
         });
@@ -83,6 +86,7 @@ public class DatabaseService extends Service {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                          APIQuizzes.add(document.getData());
                     }
+                    sendBroadcast("new-quizzes");
                 }
             }
         });
@@ -92,7 +96,15 @@ public class DatabaseService extends Service {
     // ------------------------------------------------------------- //
     @Override
     public IBinder onBind(Intent intent) {
-        getApiQuizzes();
         return binder;
+    }
+
+
+    //https://medium.com/the-sixt-india-blog/ways-to-communicate-between-activity-and-service-6a8f07275297
+    //https://stackoverflow.com/questions/8802157/how-to-use-localbroadcastmanager
+    private void sendBroadcast(String message)
+    {
+        Intent intent = new Intent(message);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

@@ -1,15 +1,20 @@
 package dk.appproject.quiznchill;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +31,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     private List<String> quizList = new ArrayList<>();
     private DatabaseService db;
     private ServiceConnection serviceConnection;
+    private boolean personal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,12 +43,14 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
         setupConnectionToService();
         bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("new-quizzes"));
 
         quizView = findViewById(R.id.rvStartQuizQuizzes);
         quizView.setHasFixedSize(true);
         quizLayout = new LinearLayoutManager(this);
         quizView.setLayoutManager(quizLayout);
-
+        quizAdapter = new StringViewAdapter(quizList, StartQuizActivity.this, true);
+        quizView.setAdapter(quizAdapter);
 
         opponentView = findViewById(R.id.rvStartQuizOpponents);
         opponentView.setHasFixedSize(true);
@@ -51,7 +59,40 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         opponentAdapter = new StringViewAdapter(opponents.getNames(), StartQuizActivity.this, false);
         opponentView.setAdapter(opponentAdapter);
 
+
+        Button btnPersonal = findViewById(R.id.btnStartQuizPersonal);
+        btnPersonal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.getPersonalQuizzes();
+                personal = true;
+            }
+        });
+
+        Button btnPublic = findViewById(R.id.btnStartQuizPublic);
+        btnPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.getApiQuizzes();
+                personal = false;
+            }
+        });
+
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            quizList.clear();
+
+            for (Map<String, Object> quiz : (personal ? db.PersonalQuizzes : db.APIQuizzes)) {
+                quizList.add(quiz.get("quizName").toString());
+            }
+
+            quizAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     public void onQuizClick(int position) {
@@ -67,13 +108,9 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         serviceConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
+                db.getApiQuizzes();
 
-                for (Map<String, Object> quiz : db.APIQuizzes) {
-                    quizList.add(quiz.get("quizName").toString());
-                }
 
-                quizAdapter = new StringViewAdapter(quizList, StartQuizActivity.this, true);
-                quizView.setAdapter(quizAdapter);
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -81,5 +118,11 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             }
 
         };
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onDestroy();
     }
 }

@@ -57,6 +57,8 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".StartQuizActivity" />
     </application>
 
 </manifest>
