@@ -55,6 +55,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                        incorrectAnswers
                );
 
+
                questions.add(question);
                edtQuestion.getText().clear();
                edtCorrectAnswer.getText().clear();
