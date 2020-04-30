@@ -4,8 +4,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,6 +35,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -49,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private Opponents opponents = new Opponents();
+    ApiService service;
+    private ServiceConnection serviceConnection;
+    private List<Quiz> quizzes = new ArrayList<Quiz>();
 
     TextView test;
 
@@ -94,15 +109,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //Test for menu
-                //startActivity(new Intent(MainActivity.this, MenuActivity.class));
-
-                //Test for question
-                Intent goToQuestion = new Intent(MainActivity.this, QuestionActivity.class);
-                startActivity(goToQuestion);
-
-                //FirebaseUser user = firebaseAuth.getCurrentUser();
-                //sendGraphRequest(user);
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                /*
+                if(user == null)
+                {
+                    Toast.makeText(MainActivity.this, "Please log in with Facebook to play a Quiz", Toast.LENGTH_SHORT).show();
+                }
+                else
+                 */
+                {
+                    Intent intent = new Intent(MainActivity.this, StartQuizActivity.class);
+                    intent.putExtra("opponents", (Serializable) opponents);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -158,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     //Kald for venner
@@ -168,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompleted(GraphResponse response) {
                 Log.d(TAG, "onCompleted: Den klarede api kald" + response.toString());
+
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+
+                opponents = gson.fromJson(response.getRawResponse(), Opponents.class);
             }
         });
 
@@ -210,6 +233,21 @@ public class MainActivity extends AppCompatActivity {
     }
     private void updateUI(FirebaseUser user){
         test.setText(user.getDisplayName());
+    }
+
+    private void setupConnectionToService() {
+        serviceConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                //Get wordService and set up text views etc.
+                service = (((ApiService.ServiceBinder) binder).getService());
+                service.getQuiz();
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                service = null;
+            }
+
+        };
     }
 
     @Override
