@@ -49,27 +49,27 @@ public class DatabaseService extends Service {
     public void addQuizToDb(List<Question> questions, String quizName, boolean personal)
     {
         Map<String, Object> quiz = new HashMap<>();
-        quiz.put("quizName", quizName);
-        quiz.put("questions", questions);
+        quiz.put(Globals.QuizName, quizName);
+        quiz.put(Globals.Questions, questions);
 
         if (personal)
-            db.collection("PersonalQuizzes").document(quizName).set(quiz);
+            db.collection(Globals.PersonalQuizzes).document(quizName).set(quiz);
         else
-            db.collection("APIQuizzes").document(quizName).set(quiz);
+            db.collection(Globals.APIQuizzes).document(quizName).set(quiz);
     }
 
     //Inspiration from https://firebase.google.com/docs/firestore/quickstart#java_8
     public void getPersonalQuizzes()
     {
         PersonalQuizzes.clear();
-        db.collection("PersonalQuizzes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Globals.PersonalQuizzes).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         PersonalQuizzes.add(document.getData());
                     }
-                    sendBroadcast("new-quizzes");
+                    sendBroadcast(Globals.NewQuizzes);
                 }
             }
         });
@@ -79,14 +79,14 @@ public class DatabaseService extends Service {
     public void getApiQuizzes()
     {
         APIQuizzes.clear();
-        db.collection("APIQuizzes").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(Globals.APIQuizzes).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()) {
                          APIQuizzes.add(document.getData());
                     }
-                    sendBroadcast("new-quizzes");
+                    sendBroadcast(Globals.NewQuizzes);
                 }
             }
         });

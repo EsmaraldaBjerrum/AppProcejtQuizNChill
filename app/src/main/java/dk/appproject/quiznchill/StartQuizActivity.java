@@ -43,7 +43,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
         setupConnectionToService();
         bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("new-quizzes"));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(Globals.NewQuizzes));
 
         quizView = findViewById(R.id.rvStartQuizQuizzes);
         quizView.setHasFixedSize(true);
@@ -87,7 +87,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             quizList.clear();
 
             for (Map<String, Object> quiz : (personal ? db.PersonalQuizzes : db.APIQuizzes)) {
-                quizList.add(quiz.get("quizName").toString());
+                quizList.add(quiz.get(Globals.QuizName).toString());
             }
 
             quizAdapter.notifyDataSetChanged();
@@ -109,8 +109,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
                 db.getApiQuizzes();
-
-
             }
 
             public void onServiceDisconnected(ComponentName className) {
