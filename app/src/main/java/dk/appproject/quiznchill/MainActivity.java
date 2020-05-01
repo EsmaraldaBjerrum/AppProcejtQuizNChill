@@ -57,9 +57,11 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1337;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
-    private static final String TAG = MainActivity.class.getSimpleName();
+
     private Opponents opponents = new Opponents();
     ApiService service;
     private ServiceConnection serviceConnection;
@@ -91,17 +93,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
             }
 
             @Override
             public void onError(FacebookException error) {
-
             }
         });
 
 
-        Button login = findViewById(R.id.btnFacebookLogin);
+        Button login = findViewById(R.id.btnMenuOK);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,13 +116,12 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    Intent intent = new Intent(MainActivity.this, StartQuizActivity.class);
+                    Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
                     intent.putExtra("opponents", (Serializable) opponents);
                     startActivity(intent);
                 }
             }
         });
-
 
         //Firebase database ADDING
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -167,10 +166,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if(user != null){
-            updateUI(user);
-        }
+//        FirebaseUser user = firebaseAuth.getCurrentUser();
+//        if(user != null){
+//            updateUI(user);
+//        }
     }
 
     private void handleFacebookToken(AccessToken token){
@@ -213,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceDisconnected(ComponentName className) {
                 service = null;
             }
-
         };
     }
 
