@@ -4,7 +4,7 @@ public class Globals {
 
     public static final String NewQuizzes = "new-quizzes";
 
-    public static final String PersonalQuizzes = "PeronalQuizzes";
+    public static final String PersonalQuizzes = "PersonaleQuizzes";
 
     public static final String APIQuizzes = "APIQuizzes";
 

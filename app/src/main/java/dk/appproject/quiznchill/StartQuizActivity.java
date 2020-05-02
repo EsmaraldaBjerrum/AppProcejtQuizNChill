@@ -77,7 +77,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 personal = false;
             }
         });
-
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -96,7 +95,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
     @Override
     public void onQuizClick(int position) {
-
+        //Gemme den til game og sende den videre til Question
     }
 
     @Override

@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                    Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
                     intent.putExtra("opponents", (Serializable) opponents);
                     startActivity(intent);
                 }
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     private void updateUI(FirebaseUser user){
-        test.setText(user.getDisplayName());
+        //test.setText(user.getDisplayName());
     }
 
     private void setupConnectionToService() {

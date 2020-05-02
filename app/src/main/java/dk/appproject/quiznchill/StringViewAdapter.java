@@ -16,7 +16,6 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
     private OnClickListener onClickListener;
     private boolean isQuizzes;
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private OnClickListener onClickListener;
