@@ -4,6 +4,8 @@
     package="dk.appproject.quiznchill">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -15,11 +17,11 @@
         <service
             android:name=".ApiService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
         <service
             android:name=".DatabaseService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".ResultActivity" />
         <activity android:name=".QuestionActivity" />
@@ -55,6 +57,8 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <receiver android:name=".StartQuizActivity" />
     </application>
 
 </manifest>

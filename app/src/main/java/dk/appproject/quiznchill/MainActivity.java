@@ -42,17 +42,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private Opponents opponents = new Opponents();
-    ApiService service;
+    private ApiService service;
     private ServiceConnection serviceConnection;
     private List<Quiz> quizzes = new ArrayList<Quiz>();
 
@@ -81,9 +70,11 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
 
+        setupConnectionToService();
+        bindService(new Intent(MainActivity.this, ApiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
-        //facebookLogin.setReadPermissions("email", "public_profile", "user_friends");
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
         facebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -101,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button login = findViewById(R.id.btnMenuOK);
+        Button login = findViewById(R.id.btnMainOK);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,26 +114,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Firebase database ADDING
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        //FIREBASE GETTING
-        DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
     }
 
     //Kald for venner
@@ -166,10 +137,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        FirebaseUser user = firebaseAuth.getCurrentUser();
-//        if(user != null){
-//            updateUI(user);
-//        }
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if(user != null){
+            updateUI(user);
+        }
     }
 
     private void handleFacebookToken(AccessToken token){
@@ -185,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = firebaseAuth.getCurrentUser();
                             updateUI(user);
+                            sendGraphRequest(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
@@ -206,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 //Get wordService and set up text views etc.
                 service = (((ApiService.ServiceBinder) binder).getService());
-                service.getQuiz();
+
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -220,22 +192,5 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
-
-
-//        if (requestCode == RC_SIGN_IN) {
-//            IdpResponse response = IdpResponse.fromResultIntent(data);
-//
-//            if (resultCode == RESULT_OK) {
-//                // Successfully signed in
-//                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//                // ...
-//            } else {
-//                // Sign in failed. If response is null the user canceled the
-//                // sign-in flow using the back button. Otherwise check
-//                // response.getError().getErrorCode() and handle the error.
-//                // ...
-//            }
-//        }
     }
 }

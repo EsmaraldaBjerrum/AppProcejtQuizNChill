@@ -1,13 +1,24 @@
 package dk.appproject.quiznchill;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class StartQuizActivity extends AppCompatActivity implements StringViewAdapter.OnClickListener {
 
@@ -18,6 +29,9 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     private RecyclerView.LayoutManager quizLayout;
     private RecyclerView.LayoutManager opponentLayout;
     private List<String> quizList = new ArrayList<>();
+    private DatabaseService db;
+    private ServiceConnection serviceConnection;
+    private boolean personal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +41,14 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         Bundle extras = getIntent().getExtras();
         Opponents opponents = (Opponents) extras.getSerializable("opponents");
 
+        setupConnectionToService();
+        bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(Globals.NewQuizzes));
+
         quizView = findViewById(R.id.rvStartQuizQuizzes);
         quizView.setHasFixedSize(true);
         quizLayout = new LinearLayoutManager(this);
         quizView.setLayoutManager(quizLayout);
-        quizList.add("Quiz 1");
         quizAdapter = new StringViewAdapter(quizList, StartQuizActivity.this, true);
         quizView.setAdapter(quizAdapter);
 
@@ -42,7 +59,40 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         opponentAdapter = new StringViewAdapter(opponents.getNames(), StartQuizActivity.this, false);
         opponentView.setAdapter(opponentAdapter);
 
+
+        Button btnPersonal = findViewById(R.id.btnStartQuizPersonal);
+        btnPersonal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.getPersonalQuizzes();
+                personal = true;
+            }
+        });
+
+        Button btnPublic = findViewById(R.id.btnStartQuizPublic);
+        btnPublic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.getApiQuizzes();
+                personal = false;
+            }
+        });
+
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            quizList.clear();
+
+            for (Map<String, Object> quiz : (personal ? db.PersonalQuizzes : db.APIQuizzes)) {
+                quizList.add(quiz.get(Globals.QuizName).toString());
+            }
+
+            quizAdapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     public void onQuizClick(int position) {
@@ -52,5 +102,25 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     @Override
     public void onFriendClick(int position) {
 
+    }
+
+    private void setupConnectionToService() {
+        serviceConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
+                db.getApiQuizzes();
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                db = null;
+            }
+
+        };
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onDestroy();
     }
 }
