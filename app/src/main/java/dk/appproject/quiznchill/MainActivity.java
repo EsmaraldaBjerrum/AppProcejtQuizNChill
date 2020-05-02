@@ -46,9 +46,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1337;
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private CallbackManager callbackManager;
     private FirebaseAuth firebaseAuth;
-    private static final String TAG = MainActivity.class.getSimpleName();
+
     private Opponents opponents = new Opponents();
     private ApiService service;
     private ServiceConnection serviceConnection;
@@ -82,12 +84,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-
             }
 
             @Override
             public void onError(FacebookException error) {
-
             }
         });
 
@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
             public void onServiceDisconnected(ComponentName className) {
                 service = null;
             }
-
         };
     }
 

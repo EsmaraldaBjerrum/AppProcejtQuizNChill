@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".QuestionActivity">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_height="43dp"
         android:layout_marginTop="20dp"
         android:text="@string/questionHeader"
+        android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.25"
@@ -24,6 +26,7 @@
         android:layout_height="300dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:background="@color/colorText"
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,6 +39,7 @@
         android:layout_width="300dp"
         android:layout_height="90dp"
         android:layout_marginBottom="20dp"
+        android:background="@color/colorHeadline"
         app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -45,6 +49,7 @@
         android:layout_width="300dp"
         android:layout_height="90dp"
         android:layout_marginBottom="20dp"
+        android:background="@color/colorHeadline"
         app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -54,6 +59,7 @@
         android:layout_width="300dp"
         android:layout_height="90dp"
         android:layout_marginBottom="20dp"
+        android:background="@color/colorHeadline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
