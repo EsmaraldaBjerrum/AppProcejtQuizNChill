@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -63,12 +64,13 @@ public class DatabaseService extends Service {
     //-------------------------- CURRENT GAMES ----------------------//
     // --------------------------------------------------------------//
 
-    public void addGame(Game newGame){
-        Map<String, Object> game = new HashMap<>();
-        game.put("game", newGame);
+    public void AddGame(Game newGame){
+
+        Map<String, Game> gameTest = new HashMap<>();
+        gameTest.put("game", newGame);
 
         db.collection("Games")
-                .add(game)
+                .add(gameTest)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -82,31 +84,32 @@ public class DatabaseService extends Service {
                     }
                 });
 
-
-
         //Map<String, Object> game = new HashMap<>();
         //game.put("game", newGame);
         //db.collection("Games").document().set(newGame);
     }
 
-    public Game [] getPlayersGames(){
+    public Game [] getPlayersGames(String playerName){
+
+        CollectionReference gamesRef = db.collection("Games");
+        gamesRef.whereArrayContainsAny("Players", Arrays.asList(playerName));
+
 
         db.collection("Games")
+                .whereArrayContainsAny("Players", Arrays.asList())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
                         } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
+                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-
 
         return new Game[0];
     }

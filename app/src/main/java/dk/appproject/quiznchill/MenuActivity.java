@@ -38,6 +38,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        //Setup of database
         setupConnectionToDatabaseService();
 
         startButton = findViewById(R.id.btnMenuStartQuiz);
@@ -66,26 +67,25 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 startActivityForResult(goToCreateQuiz, CreateCode);
             }
         });
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         bindToDataBaseService();
-
-
     }
 
     private void getPlayersGames(){
 
-        databaseService.getPlayersGames();
+        databaseService.getPlayersGames("Kurt");
     }
 
     @Override
     public void onListItemClick(int index) {
-        //OOOOOOH hvad skal der ske når der bliver trykket på et spiiiiil
+        //OOOOOOH hvad skal der ske når der bliver trykket på et spiiiiil //Der skal vel ikke ske noget alligevel
     }
+
+
 
     //--------------------- Binding til Database service -------------------//
 
@@ -109,6 +109,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
+                databaseService.getPlayersGames("Kurt");
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {

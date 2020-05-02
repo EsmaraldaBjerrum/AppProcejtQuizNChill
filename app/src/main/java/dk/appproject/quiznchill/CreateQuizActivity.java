@@ -18,6 +18,7 @@ import android.widget.Toast;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CreateQuizActivity extends AppCompatActivity {
@@ -70,8 +71,15 @@ public class CreateQuizActivity extends AppCompatActivity {
            public void onClick(View v) {
 
             databaseService.AddQuizToDb(questions,edtQuizName.getText().toString());
+               /*Player player1 = new Player("Kurt", 888, 0, false);
+               Player player2 = new Player("Lone", 908, 0, false);
+               Player[] players = new Player[2];
+               players[0] = player1;
+               players[1] = player2;
+               Game game = new Game(Arrays.asList(players), "De gode quiz", player1, true);
+               databaseService.AddGame(game);
                Log.d(TAG, "Questions added");
-               finish();
+               finish();*/
            }
        });
     }

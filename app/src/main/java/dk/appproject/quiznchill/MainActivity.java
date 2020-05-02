@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
+                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra("opponents", (Serializable) opponents);
                     startActivity(intent);
                 }

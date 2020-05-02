@@ -1,23 +1,25 @@
 package dk.appproject.quiznchill;
 
+import java.util.List;
+
 public class Game {
 
-    private Player [] players;
+    private List<Player> players;
     private String quizName;
     private Player quizMaster;
     private boolean isActive;
 
-    public Game(Player[] players, String quizName, Player quizMaster, boolean isActive) {
+    public Game(List<Player> players, String quizName, Player quizMaster, boolean isActive) {
         this.players = players;
         this.quizName = quizName;
         this.quizMaster = quizMaster;
         this.isActive = isActive;
     }
-    public Player[] getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(Player[] players) {
+    public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
