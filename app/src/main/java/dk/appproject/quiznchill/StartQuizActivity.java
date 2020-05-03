@@ -72,7 +72,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         btnPersonal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.getPersonalQuizzes();
+                  db.getPersonalQuizzes();
                 personal = true;
             }
         });

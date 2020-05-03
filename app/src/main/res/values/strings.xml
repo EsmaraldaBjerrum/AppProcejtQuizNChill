@@ -16,15 +16,16 @@
     <string name="AddedQuestionToast">The question is added</string>
     <string name="opret_ny_quiz">Create new quiz</string>
     <string name="quiz_navn">Quiz name</string>
-    <string name="quiz_navn_hint" translatable="false">Quiz name</string>
-    <string name="sp_rgsm_l_hint" translatable="false">Question</string>
+    <string name="quiz_navn_hint">Quiz name</string>
+    <string name="sp_rgsm_l_hint">Question</string>
     <string name="forkert_svar_hint">First wrong answer</string>
-    <string name="rigtig_svar" translatable="false">Correct answer</string>
+    <string name="rigtig_svar">Correct answer</string>
     <string name="det_rigtige_svar_hint">Correct answer</string>
-    <string name="forkert_svar" translatable="false">Wrong answer</string>
+    <string name="forkert_svar">Wrong answer</string>
     <string name="tilf_j_sp_rgsm_l">Add question</string>
     <string name="sp_rgsm_l">Question</string>
-    <string name="ok">Ok</string>
-    <string name="v_du_tabte_quizzen" translatable="false">You lost the quiz</string>
-    <string name="yay_du_vandt_quizzen" translatable="false">You won the quiz!</string>
+    <string name="ok">OK</string>
+    <string name="v_du_tabte_quizzen">You lost the quiz</string>
+    <string name="yay_du_vandt_quizzen">You won the quiz!</string>
+    <string name="Personale" translatable="false">Personal</string>
 </resources>

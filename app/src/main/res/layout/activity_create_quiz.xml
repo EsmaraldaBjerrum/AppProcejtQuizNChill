@@ -10,11 +10,12 @@
         android:id="@+id/txtViewCreateQuizTitel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="47dp"
+        android:layout_marginRight="47dp"
         android:text="@string/opret_ny_quiz"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -25,14 +26,15 @@
         android:layout_marginLeft="16dp"
         android:text="@string/quiz_navn"
         android:textSize="18sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/edtTxtCreateQuizQuizName"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@+id/edtTxtCreateQuizQuizName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edtTxtCreateQuizQuizName" />
 
     <EditText
         android:id="@+id/edtTxtCreateQuizQuizName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="119dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="@string/quiz_navn_hint"
         android:importantForAutofill="no"
@@ -44,27 +46,25 @@
         android:id="@+id/edtTxtCreateQuizQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="33dp"
+        android:layout_marginBottom="29dp"
         android:ems="10"
         android:hint="@string/sp_rgsm_l_hint"
         android:importantForAutofill="no"
         android:inputType="textShortMessage|textMultiLine"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtCreateQuizCorrectAnswer"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtCreateQuizQuizName" />
+        app:layout_constraintBottom_toTopOf="@+id/edtTxtCreateQuizCorrectAnswer"
+        app:layout_constraintStart_toStartOf="@+id/edtTxtCreateQuizCorrectAnswer" />
 
     <EditText
         android:id="@+id/edtTxtCreateQuizWrongAnswerOne"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="18dp"
+        android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="@string/forkert_svar_hint"
         android:importantForAutofill="no"
         android:inputType="textShortMessage|textMultiLine|text"
-        app:layout_constraintStart_toEndOf="@+id/txtViewCreateQuizWrongAnswerOne"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtCreateQuizCorrectAnswer" />
+        app:layout_constraintBottom_toTopOf="@+id/edtTxtCreateQuizWrongAnswerTwo"
+        app:layout_constraintStart_toStartOf="@+id/edtTxtCreateQuizWrongAnswerTwo" />
 
     <TextView
         android:id="@+id/txtViewCreateQuizCorrectAnswer"
@@ -81,13 +81,15 @@
         android:id="@+id/edtTxtCreateQuizCorrectAnswer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="29dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="18dp"
         android:ems="10"
         android:hint="@string/det_rigtige_svar_hint"
         android:importantForAutofill="no"
         android:inputType="textShortMessage|textMultiLine"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtCreateQuizWrongAnswerOne"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtCreateQuizQuestion" />
+        app:layout_constraintBottom_toTopOf="@+id/edtTxtCreateQuizWrongAnswerOne"
+        app:layout_constraintStart_toEndOf="@+id/txtViewCreateQuizCorrectAnswer" />
 
     <TextView
         android:id="@+id/txtViewCreateQuizWrongAnswerOne"
@@ -115,25 +117,29 @@
         android:id="@+id/btnCreateQuizAddQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="58dp"
+        android:layout_marginEnd="21dp"
+        android:layout_marginRight="21dp"
+        android:layout_marginBottom="58dp"
         android:text="@string/tilf_j_sp_rgsm_l"
         android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtCreateQuizWrongAnswerTwo" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnCreateQuizOk"
+        app:layout_constraintTop_toTopOf="@+id/edtTxtCreateQuizWrongAnswerOne" />
 
     <EditText
         android:id="@+id/edtTxtCreateQuizWrongAnswerTwo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="58dp"
         android:ems="10"
         android:hint="@string/forkert_svar_hint"
         android:importantForAutofill="no"
         android:inputType="textShortMessage|textMultiLine|text"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtCreateQuizWrongAnswerOne"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtCreateQuizWrongAnswerOne" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtViewCreateQuizWrongAnswerTwo" />
 
     <TextView
         android:id="@+id/txtViewCreateQuizQuestion"
@@ -150,10 +156,10 @@
         android:id="@+id/btnCreateQuizOk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="44dp"
+        android:layout_marginEnd="47dp"
+        android:layout_marginRight="47dp"
         android:text="@string/ok"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnCreateQuizAddQuestion"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

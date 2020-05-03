@@ -7,11 +7,17 @@
     <string name="btnCreateQuiz">Opret ny quiz!</string>
     <string name="questionHeader">"Spørgsmål: "</string>
     <string name="AddedQuestionToast">Spørgsmålet er tilføjet</string>
-    <string name="opret_ny_quiz">Create new quiz</string>
-    <string name="quiz_navn">Quiz name</string>
-    <string name="forkert_svar_hint">First wrong answer</string>
-    <string name="det_rigtige_svar_hint">Correct answer</string>
-    <string name="tilf_j_sp_rgsm_l">Add question</string>
-    <string name="sp_rgsm_l">Question</string>
-    <string name="ok">Ok</string>
+    <string name="opret_ny_quiz">Opret ny quiz</string>
+    <string name="quiz_navn">Quiz navn</string>
+    <string name="forkert_svar_hint">Forkert svar 1</string>
+    <string name="det_rigtige_svar_hint">Korrekt svar</string>
+    <string name="tilf_j_sp_rgsm_l">Tilføj spørgsmål</string>
+    <string name="sp_rgsm_l">Spørgsmål</string>
+    <string name="ok">OK</string>
+    <string name="quiz_navn_hint" translatable="false">Quiz navn</string>
+    <string name="sp_rgsm_l_hint">Spørgsmål</string>
+    <string name="rigtig_svar">Korrekt svar</string>
+    <string name="forkert_svar">Forkert svar</string>
+    <string name="v_du_tabte_quizzen">Du tabte quizzen</string>
+    <string name="yay_du_vandt_quizzen">Du vandt quizzen!</string>
 </resources>

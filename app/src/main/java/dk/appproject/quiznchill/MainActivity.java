@@ -42,6 +42,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private Opponents opponents = new Opponents();
+    ApiService service;
     private ServiceConnection serviceConnection;
     private Player userPlayer;
 
@@ -72,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
+        //facebookLogin.setReadPermissions("email", "public_profile", "user_friends");
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
         facebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -113,6 +126,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Firebase database ADDING
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        //FIREBASE GETTING
+        DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     //Kald for venner

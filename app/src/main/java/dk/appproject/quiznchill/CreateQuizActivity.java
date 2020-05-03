@@ -52,7 +52,6 @@ public class CreateQuizActivity extends AppCompatActivity {
                        incorrectAnswers
                );
 
-
                questions.add(question);
                edtQuestion.getText().clear();
                edtCorrectAnswer.getText().clear();
@@ -126,14 +125,14 @@ public class CreateQuizActivity extends AppCompatActivity {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
 
                 // When the connection is established, the current word is fetched from the database
-                Log.d(TAG, "Word learner service connected");
+                Log.d(TAG, "Databaseservice connected");
 
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 databaseService = null;
-                Log.d(TAG, "Word learner service disconnected");
+                Log.d(TAG, "Databaseservice disconnected");
             }
         };
     }
