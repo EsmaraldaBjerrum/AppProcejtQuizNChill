@@ -14,6 +14,11 @@ public class Player {
         finishedQuiz = _finishedQuiz;
     }
 
+    public Player(String _name, long _facebookId){
+        name = _name;
+        facebookId = _facebookId;
+    }
+
     public String getName() {
         return name;
     }

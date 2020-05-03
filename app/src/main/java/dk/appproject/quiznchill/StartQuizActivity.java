@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,12 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     private DatabaseService db;
     private ServiceConnection serviceConnection;
     private boolean personal;
+    private List<Question> chosenQuestions;
+    private List<Player> chosenOpponents = new ArrayList<>();
+    private List<Map<String, Object>> quizzes;
+    private Opponents opponents;
+    private String chosenQuiz;
+    private Player user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +46,8 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         setContentView(R.layout.activity_start_quiz);
 
         Bundle extras = getIntent().getExtras();
-        Opponents opponents = (Opponents) extras.getSerializable("opponents");
+        opponents = (Opponents) extras.getSerializable(Globals.Opponents);
+        user = (Player) extras.getSerializable(Globals.User);
 
         setupConnectionToService();
         bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
@@ -78,6 +86,22 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             }
         });
 
+        Button btnOK = findViewById(R.id.btnStartQuizOK);
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Game game = new Game(chosenOpponents, chosenQuiz, (personal ? user : null), true);
+                String id = db.addGame(game);
+                
+                Intent intent = new Intent(StartQuizActivity.this, QuestionActivity.class);
+                intent.putExtra(Globals.Questions, (Serializable) chosenQuestions);
+                intent.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
+                intent.putExtra(Globals.GameID, id);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -86,7 +110,9 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
             quizList.clear();
 
-            for (Map<String, Object> quiz : (personal ? db.PersonalQuizzes : db.APIQuizzes)) {
+            quizzes = (personal ? db.PersonalQuizzes : db.APIQuizzes);
+
+            for (Map<String, Object> quiz : quizzes) {
                 quizList.add(quiz.get(Globals.QuizName).toString());
             }
 
@@ -94,15 +120,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         }
     };
 
-    @Override
-    public void onQuizClick(int position) {
-
-    }
-
-    @Override
-    public void onFriendClick(int position) {
-
-    }
 
     private void setupConnectionToService() {
         serviceConnection = new ServiceConnection() {
@@ -122,5 +139,25 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();
+    }
+
+    @Override
+    public void onQuizClick(int position) {
+
+        chosenQuiz = quizList.get(position);
+        chosenQuestions = (List<Question>)quizzes.get(position).get(Globals.Questions);
+        quizAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onFriendClick(int position, boolean addOpponent) {
+        if (addOpponent) {
+            Opponents.Opponent o = opponents.data.get(position);
+            Player p = new Player(o.name, o.id);
+            chosenOpponents.add(p);
+        }
+        else
+            chosenOpponents.remove(position);
     }
 }

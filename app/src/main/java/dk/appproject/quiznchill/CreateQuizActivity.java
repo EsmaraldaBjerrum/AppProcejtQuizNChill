@@ -66,7 +66,7 @@ public class CreateQuizActivity extends AppCompatActivity {
            @Override
            public void onClick(View v) {
 
-            databaseService.AddQuizToDb(questions,edtQuizName.getText().toString());
+            //databaseService.addQuizToDb(questions,edtQuizName.getText().toString());
                /*Player player1 = new Player("Kurt", 888, 0, false);
                Player player2 = new Player("Lone", 908, 0, false);
                Player[] players = new Player[2];

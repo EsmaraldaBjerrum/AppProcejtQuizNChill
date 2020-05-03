@@ -52,9 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private Opponents opponents = new Opponents();
-    private ApiService service;
     private ServiceConnection serviceConnection;
-    private List<Quiz> quizzes = new ArrayList<Quiz>();
+    private Player userPlayer;
+
 
     TextView test;
 
@@ -69,9 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         callbackManager = CallbackManager.Factory.create();
-
-        setupConnectionToService();
-        bindService(new Intent(MainActivity.this, ApiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
@@ -107,8 +104,10 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
+                    userPlayer = new Player(user.getDisplayName(), userPlayer.getFacebookId());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
-                    intent.putExtra("opponents", (Serializable) opponents);
+                    intent.putExtra(Globals.Opponents, (Serializable) opponents);
+                    intent.putExtra(Globals.User, (Serializable) userPlayer);
                     startActivity(intent);
                 }
             }
@@ -173,19 +172,6 @@ public class MainActivity extends AppCompatActivity {
         test.setText(user.getDisplayName());
     }
 
-    private void setupConnectionToService() {
-        serviceConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName className, IBinder binder) {
-                //Get wordService and set up text views etc.
-                service = (((ApiService.ServiceBinder) binder).getService());
-
-            }
-
-            public void onServiceDisconnected(ComponentName className) {
-                service = null;
-            }
-        };
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

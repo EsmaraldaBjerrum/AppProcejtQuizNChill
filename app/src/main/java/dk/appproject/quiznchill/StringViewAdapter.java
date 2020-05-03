@@ -3,6 +3,8 @@ package dk.appproject.quiznchill;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,12 +17,14 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
     private List<String> list;
     private OnClickListener onClickListener;
     private boolean isQuizzes;
+    private int quizSelectedPosition = -1;
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private OnClickListener onClickListener;
         private TextView text;
+        private CheckBox checkBox;
         private boolean isQuizzes;
 
         public ViewHolder(View view, OnClickListener listener, boolean IsQuizzes){
@@ -30,15 +34,18 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
             view.setOnClickListener(this);
             text = view.findViewById(R.id.tvViewString);
             isQuizzes = IsQuizzes;
+            checkBox = view.findViewById(R.id.cbViewString);
         }
 
         @Override
         public void onClick(View v) {
 
+            checkBox.setChecked(!checkBox.isChecked());
+
             if (isQuizzes)
                 onClickListener.onQuizClick(getAdapterPosition());
             else
-                onClickListener.onFriendClick(getAdapterPosition());
+                onClickListener.onFriendClick(getAdapterPosition(), checkBox.isChecked());
         }
     }
 
@@ -52,10 +59,21 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         String quiz = list.get(position);
         holder.text.setText(quiz);
+
+        //Inspired by https://stackoverflow.com/questions/39127008/how-can-i-select-only-one-checkbox-in-recyclerview-and-notifydataset-changed
+        holder.checkBox.setChecked(quizSelectedPosition == position);
+        holder.checkBox.setOnCheckedChangeListener(null);
+
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                quizSelectedPosition = holder.getAdapterPosition();
+            }
+        });
     }
 
 
@@ -74,6 +92,6 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
 
     public interface OnClickListener{
         void onQuizClick(int position);
-        void onFriendClick(int position);
+        void onFriendClick(int position, boolean addOpponent);
     }
 }

@@ -25,6 +25,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,16 +110,18 @@ public class DatabaseService extends Service {
     //-------------------------- CURRENT GAMES ----------------------//
     // --------------------------------------------------------------//
 
-    public void AddGame(Game newGame){
+    public String addGame(Game newGame){
 
-        Map<String, Game> gameTest = new HashMap<>();
-        gameTest.put("game", newGame);
+        final String[] id = {null};
+        Map<String, Game> game = new HashMap<>();
+        game.put("game", newGame);
 
         db.collection("Games")
-                .add(gameTest)
+                .add(game)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        id[0] = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                     }
                 })
@@ -132,6 +135,8 @@ public class DatabaseService extends Service {
         //Map<String, Object> game = new HashMap<>();
         //game.put("game", newGame);
         //db.collection("Games").document().set(newGame);
+
+        return id[0];
     }
 
     public Game [] getPlayersGames(String playerName){
