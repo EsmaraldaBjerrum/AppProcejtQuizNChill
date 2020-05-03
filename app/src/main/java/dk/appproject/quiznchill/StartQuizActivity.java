@@ -93,7 +93,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
                 Game game = new Game(chosenOpponents, chosenQuiz, (personal ? user : null), true);
                 String id = db.addGame(game);
-                
+
                 Intent intent = new Intent(StartQuizActivity.this, QuestionActivity.class);
                 intent.putExtra(Globals.Questions, (Serializable) chosenQuestions);
                 intent.putExtra(Globals.Opponents, (Serializable) chosenOpponents);

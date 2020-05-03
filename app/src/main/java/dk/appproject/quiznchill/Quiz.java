@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class Quiz {
 
+    public Quiz(){}
+
     @SerializedName("Questions")
     @Expose
     private List<Question> questions = null;

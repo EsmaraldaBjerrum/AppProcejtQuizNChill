@@ -109,7 +109,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
-                databaseService.getPlayersGames("Kurt");
+                //databaseService.getPlayersGames("Kurt");
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {

@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     private void updateUI(FirebaseUser user){
-        test.setText(user.getDisplayName());
+        //test.setText(user.getDisplayName());
     }
 
 

@@ -1,6 +1,5 @@
 package dk.appproject.quiznchill;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ComponentName;
@@ -12,18 +11,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 /* Shared onClickListener inspired by https://stackoverflow.com/questions/25905086/multiple-buttons-onclicklistener-android
 * */
@@ -37,76 +30,120 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     private boolean bound;
 
     private Button option1, option2, option3;
-    private TextView question;
+    private TextView questionText;
 
-    private String currentQizName;
+    private String currentQuizName;
     private Question[] currentQuizQuestions;
+    private int questionIndex;
+    private int correctAnswers;
+    private int indexOfCorrectAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
 
-        //Setup coonection til database
-        databaseService = new DatabaseService();
+        //Setup connection til database
         setupConnectionToDatabaseService();
 
         option1 = findViewById(R.id.btnQuestionAnswer1);
         option2 = findViewById(R.id.btnQuestionAnswer2);
         option3 = findViewById(R.id.btnQuestionAnswer3);
-        question = findViewById(R.id.txtQuestionText);
+        questionText = findViewById(R.id.txtQuestionText);
 
         option1.setOnClickListener(this);
         option2.setOnClickListener(this);
         option3.setOnClickListener(this);
 
-        //Hente Quiz med database kald
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        //Object quiz = document.getData();
-                        Map<String, Object> currentQuiz = document.getData();
-                        currentQizName = currentQuiz.get("name").toString();
+        questionIndex = 0;
+        correctAnswers = 0;
+        indexOfCorrectAnswer = 0;
 
-                        Object questionMap = currentQuiz.get("questions");
 
-//                        for(Map.Entry<String, Object> entry : questionMap.entrySet()) {
-//                            String key = entry.getKey();
-//                            HashMap value = entry.getValue();
-//
-//                            // do what you have to do here
-//                            // In your case, another loop.
-//                        }
-
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
-        //Spørgsmål med kald fra database eller som intent
-        displayQuestions();
+        //TEST QUESTIONS
+        List<String> wQ = new ArrayList<>();
+        wQ.add("Dumb");
+        wQ.add("Boring and just a real piece of shit with no regards for human life and all that jazz");
+        Question q = new Question("Alice", "Hatter is what?", "Mad", wQ);
+        Question q2 = new Question("Alice", "Red Queen is what?", "Evil bitch", wQ);
+        Question[] qs = new Question[2];
+        qs[0] = q;
+        qs[1] = q2;
+        currentQuizQuestions = qs;
     }
 
-    private void displayQuestions(){
+    private void displayQuestion(){
+        //Get the current question and wrong answers
+        Question currentQuestion = currentQuizQuestions[questionIndex];
+        List<String> incorrectAnswers = currentQuestion.getIncorrectAnswers();
 
-    }
+        //Set QuestionText
+        questionText.setText(currentQuestion.getQuestion());
 
-    private void shuffelOptions(){
-
+        //Clear
+        option3.setText("");
+        //Shuffle the position of the correct answer and set text for the options
+        Random rand = new Random();
+        int randomNumber = rand.nextInt(2) + 1;
+        switch (randomNumber){
+            case 1:
+                option1.setText(currentQuestion.getCorrectAnswer());
+                option2.setText(incorrectAnswers.get(0));
+                option3.setText(incorrectAnswers.get(1));
+                indexOfCorrectAnswer = 1;
+                break;
+            case 2:
+                option1.setText(incorrectAnswers.get(0));
+                option2.setText(currentQuestion.getCorrectAnswer());
+                option3.setText(incorrectAnswers.get(1));
+                indexOfCorrectAnswer = 2;
+                break;
+            case 3:
+                option1.setText(incorrectAnswers.get(1));
+                option2.setText(incorrectAnswers.get(0));
+                option3.setText(currentQuestion.getCorrectAnswer());
+                indexOfCorrectAnswer = 3;
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void onClick(View v) {
+
+        switch (v.getId()) {
+            case R.id.btnQuestionAnswer1:
+                if(indexOfCorrectAnswer == 1) {
+                    correctAnswers++;
+                }
+                break;
+
+            case R.id.btnQuestionAnswer2:
+                if(indexOfCorrectAnswer == 2) {
+                    correctAnswers++;
+                }
+                break;
+
+            case R.id.btnQuestionAnswer3:
+                if(indexOfCorrectAnswer == 3) {
+                    correctAnswers++;
+                }
+                break;
+            default:
+                break;
+        }
+
+        questionIndex++;
+        if(questionIndex < currentQuizQuestions.length){
+            displayQuestion();
+        }else {
+            finish();
+            //Kald af noget kode der slutter quizzen af OG opdatere game
+            // databaseService.updateGameStatus();
+        }
+
+        //TEST CODE FOR ADDING GAME AND ADDING QUIZ
 
         /*List<String> wQ = new ArrayList<>();
         wQ.add("deidheu");
@@ -116,10 +153,10 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         List<Question> qs = new ArrayList<>();
         qs.add(q);
         qs.add(q2);
-        databaseService.AddQuizToDb(qs, "hat");
+        databaseService.addQuizToDb(qs, "hatterMaD", true);*/
 
 
-        Player player1 = new Player("Kurt", 888, 0, false);
+        /*Player player1 = new Player("Kurt", 888, 0, false);
         Player player2 = new Player("Lone", 908, 0, false);
         Player[] players = new Player[2];
         players[0] = player1;
@@ -128,7 +165,9 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         databaseService.addGame(game);*/
     }
 
-    //-----------------------Lifecycles--------------------------//
+    //----------------------------------------------------------//
+    //-----------------------Lifecycle--------------------------//
+    //----------------------------------------------------------//
 
     @Override
     protected void onStart() {
@@ -149,6 +188,14 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         unbindFromDatabaseService();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    //----------------------------------------------------------------------//
+    //--------------------- Binding til Database service -------------------//
+    //----------------------------------------------------------------------//
 
     private void unbindFromDatabaseService() {
         if(bound){
@@ -170,6 +217,9 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
+
+                //currentQuizQuestions = databaseService.SOMETHING!(); //Her kaldes efter spørgsmålene
+                displayQuestion();
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {
