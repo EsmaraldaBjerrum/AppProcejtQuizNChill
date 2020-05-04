@@ -32,8 +32,9 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     private Button option1, option2, option3;
     private TextView questionText;
 
-    private String currentQuizName;
-    private Question[] currentQuizQuestions;
+    private String currentQuizId;
+    private Player currentPlayer;
+    private List<Question> currentQuizQuestions;
     private int questionIndex;
     private int correctAnswers;
     private int indexOfCorrectAnswer;
@@ -45,6 +46,12 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
 
         //Setup connection til database
         setupConnectionToDatabaseService();
+
+        //Get variables from bundle
+        Bundle extras = getIntent().getExtras();
+        currentPlayer = (Player) extras.getSerializable(Globals.User);
+        currentQuizQuestions = (ArrayList<Question>) extras.getSerializable(Globals.Questions);
+        currentQuizId = (String) extras.getSerializable(Globals.GameID);
 
         option1 = findViewById(R.id.btnQuestionAnswer1);
         option2 = findViewById(R.id.btnQuestionAnswer2);
@@ -59,9 +66,11 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         correctAnswers = 0;
         indexOfCorrectAnswer = 0;
 
+        displayQuestion();
+
 
         //TEST QUESTIONS
-        List<String> wQ = new ArrayList<>();
+        /*List<String> wQ = new ArrayList<>();
         wQ.add("Dumb");
         wQ.add("Boring and just a real piece of shit with no regards for human life and all that jazz");
         Question q = new Question("Alice", "Hatter is what?", "Mad", wQ);
@@ -69,19 +78,17 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         Question[] qs = new Question[2];
         qs[0] = q;
         qs[1] = q2;
-        currentQuizQuestions = qs;
+        currentQuizQuestions = qs;*/
     }
 
     private void displayQuestion(){
         //Get the current question and wrong answers
-        Question currentQuestion = currentQuizQuestions[questionIndex];
+        Question currentQuestion = (Question)currentQuizQuestions.get(questionIndex);
         List<String> incorrectAnswers = currentQuestion.getIncorrectAnswers();
 
         //Set QuestionText
         questionText.setText(currentQuestion.getQuestion());
 
-        //Clear
-        option3.setText("");
         //Shuffle the position of the correct answer and set text for the options
         Random rand = new Random();
         int randomNumber = rand.nextInt(2) + 1;
@@ -135,34 +142,13 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         }
 
         questionIndex++;
-        if(questionIndex < currentQuizQuestions.length){
+        if(questionIndex < currentQuizQuestions.size()){
             displayQuestion();
         }else {
+            databaseService.updateGameStatus(currentQuizId, currentPlayer.getName(), correctAnswers);
+            //EVT broadcast?
             finish();
-            //Kald af noget kode der slutter quizzen af OG opdatere game
-            // databaseService.updateGameStatus();
         }
-
-        //TEST CODE FOR ADDING GAME AND ADDING QUIZ
-
-        /*List<String> wQ = new ArrayList<>();
-        wQ.add("deidheu");
-        wQ.add("dedede");
-        Question q = new Question("String category", "String question", "String correctAnswer", wQ);
-        Question q2 = new Question("String category", "String question", "String correctAnswer", wQ);
-        List<Question> qs = new ArrayList<>();
-        qs.add(q);
-        qs.add(q2);
-        databaseService.addQuizToDb(qs, "hatterMaD", true);*/
-
-
-        /*Player player1 = new Player("Kurt", 888, 0, false);
-        Player player2 = new Player("Lone", 908, 0, false);
-        Player[] players = new Player[2];
-        players[0] = player1;
-        players[1] = player2;
-        Game game = new Game(players, "De gode quiz", player1, true);
-        databaseService.addGame(game);*/
     }
 
     //----------------------------------------------------------//
@@ -219,7 +205,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
                 Log.d(TAG, "DbService connected");
 
                 //currentQuizQuestions = databaseService.SOMETHING!(); //Her kaldes efter spørgsmålene
-                displayQuestion();
+
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -228,4 +214,26 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             }
         };
     }
+
+
+    //TEST CODE FOR ADDING GAME AND ADDING QUIZ
+
+        /*List<String> wQ = new ArrayList<>();
+        wQ.add("deidheu");
+        wQ.add("dedede");
+        Question q = new Question("String category", "String question", "String correctAnswer", wQ);
+        Question q2 = new Question("String category", "String question", "String correctAnswer", wQ);
+        List<Question> qs = new ArrayList<>();
+        qs.add(q);
+        qs.add(q2);
+        databaseService.addQuizToDb(qs, "hatterMaD", true);*/
+
+
+        /*Player player1 = new Player("Kurt", 888, 0, false);
+        Player player2 = new Player("Lone", 908, 0, false);
+        Player[] players = new Player[2];
+        players[0] = player1;
+        players[1] = player2;
+        Game game = new Game(players, "De gode quiz", player1, true);
+        databaseService.addGame(game);*/
 }

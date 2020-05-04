@@ -65,8 +65,11 @@ public class CreateQuizActivity extends AppCompatActivity {
            @Override
            public void onClick(View v) {
 
-            //databaseService.addQuizToDb(questions,edtQuizName.getText().toString(), true);
+            databaseService.addQuizToDb(questions,edtQuizName.getText().toString(), true);
+            Log.d(TAG, "Questions added");
+            finish();
 
+            //TEST CODE
                /*List<String> wQ = new ArrayList<>();
                wQ.add("deidheu");
                wQ.add("dedede");
@@ -83,9 +86,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                players[0] = player1;
                players[1] = player2;
                Game game = new Game(Arrays.asList(players), "De gode quiz", player1, true);
-               databaseService.AddGame(game);
-               Log.d(TAG, "Questions added");
-               finish();*/
+               databaseService.AddGame(game);*/
            }
        });
     }

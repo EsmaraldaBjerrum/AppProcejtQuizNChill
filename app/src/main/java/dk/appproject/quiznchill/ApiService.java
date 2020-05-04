@@ -73,12 +73,9 @@ public class ApiService extends Service {
     private void ConvertJSON(String json){
 
         String json2 = "{\"Questions\"" + json.substring(28);
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-
         Quiz q = gson.fromJson(json2, Quiz.class);
-
         db.addQuizToDb(q.getQuestions(), q.getQuestions().get(0).getCategory(), false);
     }
 
@@ -87,13 +84,9 @@ public class ApiService extends Service {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
             }
-
             public void onServiceDisconnected(ComponentName className) {
                 db = null;
             }
-
         };
     }
-
-
 }

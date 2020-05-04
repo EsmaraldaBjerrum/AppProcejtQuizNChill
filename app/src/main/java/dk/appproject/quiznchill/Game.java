@@ -8,6 +8,7 @@ public class Game {
     private String quizName;
     private Player quizMaster;
     private boolean isActive;
+    private List<String> playerNames;
 
     public Game(List<Player> players, String quizName, Player quizMaster, boolean isActive) {
         this.players = players;
@@ -45,5 +46,13 @@ public class Game {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public List<String> getPlayerNames() {
+        return playerNames;
+    }
+
+    public void setPlayerNames(List<String> playerNames) {
+        this.playerNames = playerNames;
     }
 }

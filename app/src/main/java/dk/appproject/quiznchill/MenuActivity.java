@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,11 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     private ServiceConnection databaseServiceConnection;
     private boolean bound;
 
+    //Player and opponents and games
+    private Opponents opponents;
+    private Player user;
+    private List<Game> games = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +46,10 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
         //Setup of database
         setupConnectionToDatabaseService();
+
+        Bundle extras = getIntent().getExtras();
+        opponents = (Opponents) extras.getSerializable(Globals.Opponents);
+        user = (Player) extras.getSerializable(Globals.User);
 
         startButton = findViewById(R.id.btnMenuStartQuiz);
         createButton = findViewById(R.id.btnMenuCreateQuiz);
@@ -49,7 +59,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         currentGamesRecyclerView.setHasFixedSize(false);
         menuListLayoutManager = new LinearLayoutManager(this);
         currentGamesRecyclerView.setLayoutManager(menuListLayoutManager);
-        menuListAdaptor = new MenuListAdaptor(this);
+        menuListAdaptor = new MenuListAdaptor(games,this);
         currentGamesRecyclerView.setAdapter(menuListAdaptor);
 
         //Buttons functionality
@@ -57,7 +67,9 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             @Override
             public void onClick(View v) {
                 Intent goToStartQuiz = new Intent(MenuActivity.this, StartQuizActivity.class);
-                startActivityForResult(goToStartQuiz, StartCode); //EVT forkert
+                goToStartQuiz.putExtra(Globals.Opponents, opponents);
+                goToStartQuiz.putExtra(Globals.User, (Serializable) user);
+                startActivity(goToStartQuiz);
             }
         });
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -77,14 +89,14 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
     private void getPlayersGames(){
 
-        databaseService.getPlayersGames("Kurt");
+        databaseService.getPlayersGames(user.getName());
     }
 
     @Override
     public void onListItemClick(int index) {
-        //OOOOOOH hvad skal der ske når der bliver trykket på et spiiiiil //Der skal vel ikke ske noget alligevel
+        //Check status på spil
+        //Send videre til Question hvis status er igang
     }
-
 
 
     //--------------------- Binding til Database service -------------------//
@@ -109,7 +121,8 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
-                //databaseService.getPlayersGames("Kurt");
+                games = databaseService.getPlayersGames(user.getName());
+                menuListAdaptor.notifyDataSetChanged();
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {

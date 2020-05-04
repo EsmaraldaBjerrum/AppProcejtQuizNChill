@@ -4,7 +4,7 @@ public class Globals {
 
     public static final String NewQuizzes = "new-quizzes";
 
-    public static final String PersonalQuizzes = "PersonalQuizzes";
+    public static final String PersonalQuizzes = "PersonaleQuizzes"; //JEg bliver ved at skrive den forkert da det er sådan det står i databasen!
 
     public static final String APIQuizzes = "APIQuizzes";
 

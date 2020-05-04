@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,9 +39,13 @@ public class DatabaseService extends Service {
 
     private static final String TAG = DatabaseService.class.getSimpleName();
     private static final int NOTIFY_ID = 142;
+
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final IBinder binder = new DatabaseServiceBinder();
+
+    public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
+    public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
 
     public DatabaseService() {
     }
@@ -62,20 +67,20 @@ public class DatabaseService extends Service {
        return super.onStartCommand(intent,flags,startId);
     }
 
-    public void AddQuizToDb(List<Question> questions, String quizName)
+    // ----------------------------------------------------------------------------- //
+    // --------------------------------- QUIZZES ----------------------------------- //
+    // ----------------------------------------------------------------------------- //
+
+    public void addQuizToDb(List<Question> questions, String quizName, boolean personal)
     {
-        PersonalQuizzes.clear();
-        db.collection(Globals.PersonalQuizzes).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        PersonalQuizzes.add(document.getData());
-                    }
-                    sendBroadcast(Globals.NewQuizzes);
-                }
-            }
-        });
+        Map<String, Object> quiz = new HashMap<>();
+        quiz.put(Globals.QuizName, quizName);
+        quiz.put(Globals.Questions, questions);
+
+        if (personal)
+            db.collection(Globals.PersonalQuizzes).document(quizName).set(quiz);
+        else
+            db.collection(Globals.APIQuizzes).document(quizName).set(quiz);
     }
 
     public void getApiQuizzes()
@@ -87,6 +92,22 @@ public class DatabaseService extends Service {
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()) {
                        APIQuizzes.add(document.getData());
+                    }
+                    sendBroadcast(Globals.NewQuizzes);
+                }
+            }
+        });
+    }
+
+    public void getPersonalQuizzes()
+    {
+        PersonalQuizzes.clear();
+        db.collection(Globals.PersonalQuizzes).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()){
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        PersonalQuizzes.add(document.getData());
                     }
                     sendBroadcast(Globals.NewQuizzes);
                 }
@@ -143,6 +164,9 @@ public class DatabaseService extends Service {
      */
     public String addGame(Game newGame){
 
+        //Adding list of names to game object
+        newGame.setPlayerNames(getListOfPlayerNames(newGame));
+
         final String[] id = {null};
         Map<String, Game> game = new HashMap<>();
         game.put("game", newGame);
@@ -152,6 +176,7 @@ public class DatabaseService extends Service {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        id[0] = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                     }
                 })
@@ -162,21 +187,33 @@ public class DatabaseService extends Service {
                     }
                 });
 
-        //Map<String, Object> game = new HashMap<>();
-        //game.put("game", newGame);
-        //db.collection("Games").document().set(newGame);
+        return id[0];
     }
 
-    public Game [] getPlayersGames(){
+    private List<String> getListOfPlayerNames(Game game){
+        List<String> names = new ArrayList<>();
+        for (Player p: game.getPlayers()){
+            names.add(p.getName());
+        }
+        if(game.getQuizMaster() !=null) {
+            names.add(game.getQuizMaster().toString());
+        }
+        return names;
+    }
 
+    List<Game> games = new ArrayList<>();
+    public List<Game> getPlayersGames(String playerName){
+
+        // TODO: 04-05-2020 Virker ikke 
         db.collection("Games")
-                .whereArrayContainsAny("Players", Arrays.asList())
+                .whereArrayContainsAny("playerNames", Arrays.asList(playerName))
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                //games.add(document.getData().get("game"));
 
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
@@ -186,15 +223,13 @@ public class DatabaseService extends Service {
                     }
                 });
 
-
-        return new Game[0];
+        return games;
     }
 
     public void updateGameStatus(String gameId, String player, int correctAnswers){
 
         //Gør noget med at opdatere spillet
     }
-
 
     // -------------------------------------------------------------------------- //
     // ------------------------- BINDING AND BROADCAST--------------------------- //
@@ -205,9 +240,19 @@ public class DatabaseService extends Service {
         return binder;
     }
 
+    //https://medium.com/the-sixt-india-blog/ways-to-communicate-between-activity-and-service-6a8f07275297
+    //https://stackoverflow.com/questions/8802157/how-to-use-localbroadcastmanager
+    private void sendBroadcast(String message)
+    {
+        Intent intent = new Intent(message);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+    }
+
+
     // ------------------------------------------------------------- //
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
+
     private void sendOutStartGameNotification(String quizName) {
         db.collection("Games").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -217,14 +262,13 @@ public class DatabaseService extends Service {
                 }
                 for (DocumentChange dc : snapshots.getDocumentChanges()) {
                   //  String active = (String) dc.getDocument().getData().get("game").get("active");
-                    if (dc.getDocument().getBoolean("active")) {
-                        sendStartNotification();
-                    }
+                    //if (dc.getDocument().getBoolean("active")) {
+                      //  sendStartNotification();
+                    //}
                 }
             }
         });
     }
-
 
     private void sendStartNotification(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -242,13 +286,6 @@ public class DatabaseService extends Service {
         startForeground(NOTIFY_ID,notification);
     }
 
-    //https://medium.com/the-sixt-india-blog/ways-to-communicate-between-activity-and-service-6a8f07275297
-    //https://stackoverflow.com/questions/8802157/how-to-use-localbroadcastmanager
-    private void sendBroadcast(String message)
-    {
-        Intent intent = new Intent(message);
-      //  LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
 }
 
 

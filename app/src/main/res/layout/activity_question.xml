@@ -28,7 +28,6 @@
         android:layout_marginBottom="30dp"
         android:background="@color/colorText"
         android:gravity="center"
-        android:text="rfe"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer1"
         app:layout_constraintEnd_toEndOf="parent"

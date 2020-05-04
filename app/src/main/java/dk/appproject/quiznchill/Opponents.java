@@ -30,7 +30,7 @@ public class Opponents implements Serializable {
                 '}';
     }
 
-    public class Opponent {
+    public class Opponent implements Serializable{
         public long id;
         public String name;
 

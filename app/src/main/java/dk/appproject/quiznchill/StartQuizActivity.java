@@ -72,7 +72,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         btnPersonal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                  db.getPersonalQuizzes();
+                db.getPersonalQuizzes();
                 personal = true;
             }
         });
@@ -91,12 +91,22 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             @Override
             public void onClick(View v) {
 
-                Game game = new Game(chosenOpponents, chosenQuiz, (personal ? user : null), true);
+                List<Player> players = new ArrayList<>();
+                players = chosenOpponents;
+                if(personal) {
+                    players.add(user);
+                }
+                Game game = new Game(players, chosenQuiz, (personal ? user : null), true);
                 String id = db.addGame(game);
 
+                // TODO: 04-05-2020 Map Hashmap til Question 
                 Intent intent = new Intent(StartQuizActivity.this, QuestionActivity.class);
                 intent.putExtra(Globals.Questions, (Serializable) chosenQuestions);
                 intent.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
+
+                //ADDED EXTRA
+                intent.putExtra(Globals.User, (Serializable) user);
+
                 intent.putExtra(Globals.GameID, id);
                 startActivity(intent);
             }
@@ -147,7 +157,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         chosenQuiz = quizList.get(position);
         chosenQuestions = (List<Question>)quizzes.get(position).get(Globals.Questions);
         quizAdapter.notifyDataSetChanged();
-
     }
 
     @Override

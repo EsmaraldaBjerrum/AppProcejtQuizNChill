@@ -1,6 +1,8 @@
 package dk.appproject.quiznchill;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
 
     private String name;
     private long facebookId;
@@ -17,6 +19,9 @@ public class Player {
     public Player(String _name, long _facebookId){
         name = _name;
         facebookId = _facebookId;
+    }
+    public Player(String _name){
+        name = _name;
     }
 
     public String getName() {
