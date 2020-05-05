@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,6 +40,7 @@ public class DatabaseService extends Service {
 
     private static final String TAG = DatabaseService.class.getSimpleName();
     private static final int NOTIFY_ID = 142;
+    Notification notification = new Notification();
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -48,6 +50,7 @@ public class DatabaseService extends Service {
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
 
     public DatabaseService() {
+
     }
 
     public class DatabaseServiceBinder extends Binder{
@@ -59,8 +62,11 @@ public class DatabaseService extends Service {
     // --------------------------------------------------------------------- //
     @Override
     public void onCreate(){
-        sendOutStartGameNotification("De gode quiz");
-        super.onCreate();}
+        super.onCreate();
+
+
+       // sendOutStartGameNotification("De gode quiz");
+       }
 
     @Override
     public int onStartCommand(Intent intent, int flags,int startId){
@@ -237,6 +243,19 @@ public class DatabaseService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    "44",
+                    "Notification Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+
+        sendOutStartGameNotification("sqMFS7E2n3u4RJViYvxR");
+
+
         return binder;
     }
 
@@ -253,39 +272,45 @@ public class DatabaseService extends Service {
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
 
-    private void sendOutStartGameNotification(String quizName) {
-        db.collection("Games").addSnapshotListener(new EventListener<QuerySnapshot>() {
+    public void sendOutStartGameNotification(String quizId) {
+        db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.d(TAG, e.toString());
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                documentSnapshot.get("active");
+                if((boolean)((Map<String,Object>)documentSnapshot.getData().get("game")).get("active"))
+                {
+                    notification = new NotificationCompat.Builder(DatabaseService.this, "44")
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle("Quiz N' Chill")
+                            .setContentText("You got a game")
+                            .build();
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
+                    notificationManagerCompat.notify(1337,notification);
+                    startForeground(NOTIFY_ID,notification);
                 }
-                for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                  //  String active = (String) dc.getDocument().getData().get("game").get("active");
-                    //if (dc.getDocument().getBoolean("active")) {
-                      //  sendStartNotification();
-                    //}
+
+               ArrayList<Player> players = (ArrayList<Player>) ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+                boolean quizPlayersFinish = false;
+                for (Player player : players){
+                    if(player.isFinishedQuiz()){
+                        quizPlayersFinish = true;
+                    }
+                    else
+                        quizPlayersFinish = false;
+                }
+                if(quizPlayersFinish){
+                    notification = new NotificationCompat.Builder(DatabaseService.this, "44")
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setContentTitle("Quiz N' Chill")
+                            .setContentText("The game is finish")
+                            .build();
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
+                    notificationManagerCompat.notify(1337,notification);
+                    startForeground(NOTIFY_ID,notification);
                 }
             }
         });
     }
-
-    private void sendStartNotification(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationChannel notificationChannel = new NotificationChannel("test", "testname", NotificationManager.IMPORTANCE_HIGH);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-
-        Notification notification = new NotificationCompat.Builder(this, "test")
-                .setContentText("You got a game")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setChannelId("test")
-                .build();
-
-        startForeground(NOTIFY_ID,notification);
-    }
-
 }
 
 

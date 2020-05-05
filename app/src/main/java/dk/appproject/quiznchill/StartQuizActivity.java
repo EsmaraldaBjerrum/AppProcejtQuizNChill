@@ -98,6 +98,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 }
                 Game game = new Game(players, chosenQuiz, (personal ? user : null), true);
                 String id = db.addGame(game);
+                db.sendOutStartGameNotification(id);
 
                 // TODO: 04-05-2020 Map Hashmap til Question 
                 Intent intent = new Intent(StartQuizActivity.this, QuestionActivity.class);
@@ -137,7 +138,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
                 db.getApiQuizzes();
             }
-
             public void onServiceDisconnected(ComponentName className) {
                 db = null;
             }
@@ -153,7 +153,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
     @Override
     public void onQuizClick(int position) {
-
         chosenQuiz = quizList.get(position);
         chosenQuestions = (List<Question>)quizzes.get(position).get(Globals.Questions);
         quizAdapter.notifyDataSetChanged();
