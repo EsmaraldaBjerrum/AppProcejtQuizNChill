@@ -98,7 +98,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
                 List<Player> players = new ArrayList<>();
                 players = chosenOpponents;
-                if(personal) {
+                if(!personal) {
                     players.add(user);
                 }
                 Game game = new Game(players, chosenQuiz, (personal ? user : null), true);
@@ -129,6 +129,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         public void onReceive(Context context, Intent intent) {
             String id = db.GameId;
             chosenQuestions.clear();
+            db.sendOutStartGameNotification(id);
 
             for (int i = 0; i < chosenQuestionsHashMaps.size(); i++ )
             {

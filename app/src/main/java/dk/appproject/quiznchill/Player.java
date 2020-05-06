@@ -1,12 +1,23 @@
 package dk.appproject.quiznchill;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Player implements Serializable {
 
+    @SerializedName("name")
+    @Expose
     private String name;
+    @SerializedName("facebookId")
+    @Expose
     private long facebookId;
+    @SerializedName("correctAnswers")
+    @Expose
     private int correctAnswers;
+    @SerializedName("finishedQuiz")
+    @Expose
     private boolean finishedQuiz;
 
     public Player(String _name, long _facebookId, int _correctAnswer, boolean _finishedQuiz){

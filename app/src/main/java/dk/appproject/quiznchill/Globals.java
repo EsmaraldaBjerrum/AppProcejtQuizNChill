@@ -17,4 +17,6 @@ public class Globals {
     public static final String User = "user";
 
     public static final String GameID = "gameID";
+
+    public static final String Games = "games";
 }

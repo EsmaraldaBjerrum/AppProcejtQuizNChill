@@ -1,12 +1,15 @@
 package dk.appproject.quiznchill;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -46,6 +49,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
         //Setup of database
         setupConnectionToDatabaseService();
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(Globals.Games));
 
         Bundle extras = getIntent().getExtras();
         opponents = (Opponents) extras.getSerializable(Globals.Opponents);
@@ -87,17 +91,24 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         bindToDataBaseService();
     }
 
-    private void getPlayersGames(){
-
-        databaseService.getPlayersGames(user.getName());
-    }
-
     @Override
     public void onListItemClick(int index) {
         //Check status på spil
         //Send videre til Question hvis status er igang
     }
 
+
+    //--------------------- Broadcast from Database service -------------------//
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            games.clear();
+            games = databaseService.playersGames;
+            menuListAdaptor.setPlayersGames(games);
+            menuListAdaptor.notifyDataSetChanged();
+        }
+    };
 
     //--------------------- Binding til Database service -------------------//
 
@@ -121,8 +132,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
-                //games = databaseService.getPlayersGames(user.getName());
-                menuListAdaptor.notifyDataSetChanged();
+                databaseService.getPlayersGames(user.getName());
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {

@@ -4,24 +4,20 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -29,7 +25,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -61,6 +61,7 @@ public class DatabaseService extends Service {
     // --------------------------------------------------------------------- //
     // ------------------------- SERVICE LIFE CYCLE ------------------------ //
     // --------------------------------------------------------------------- //
+
     @Override
     public void onCreate(){
         super.onCreate();
@@ -122,61 +123,17 @@ public class DatabaseService extends Service {
         });
     }
 
-
     // --------------------------------------------------------------//
     //-------------------------- CURRENT GAMES ----------------------//
     // --------------------------------------------------------------//
 
-    /*public Question [] getQuizQuestions(String quizName, boolean isPersonal){
-        HashMap<String, Object> result;
-        if(isPersonal){
-            db.collection(Globals.PersonalQuizzes)
-                    .whereEqualTo("name", quizName)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    result = document.getData();
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-        }else{
-            db.collection(Globals.APIQuizzes)
-                    .whereEqualTo("name", quizName)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-
-        }
-    }
-    private Quiz convertToQuestions(HashMap<String, Object> map){
-
-
-     */
     public void addGame(Game newGame){
 
-        //Adding list of names to game object
-        newGame.setPlayerNames(getListOfPlayerNames(newGame));
-
+        List<String> playerNames = getListOfPlayerNames(newGame);
         final String[] id = {null};
-        Map<String, Game> game = new HashMap<>();
+        Map<String, Object> game = new HashMap<>();
         game.put("game", newGame);
+        game.put("playerNames", playerNames);
 
         db.collection("Games")
                 .add(game)
@@ -208,10 +165,9 @@ public class DatabaseService extends Service {
         return names;
     }
 
-    List<Game> games = new ArrayList<>();
-    public List<Game> getPlayersGames(String playerName){
+    public List<Game> playersGames = new ArrayList<>();
+    public void getPlayersGames(String playerName){
 
-        // TODO: 04-05-2020 Virker ikke 
         db.collection("Games")
                 .whereArrayContainsAny("playerNames", Arrays.asList(playerName))
                 .get()
@@ -220,7 +176,17 @@ public class DatabaseService extends Service {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //games.add(document.getData().get("game"));
+
+                                //Converting document to Game
+                                Object gameObject = document.getData().get("game");
+                                GsonBuilder gsonbuilder = new GsonBuilder();
+                                Gson gson = gsonbuilder.create();
+                                String json = gson.toJson(gameObject);
+                                Game game = gson.fromJson(json, Game.class);
+
+                                //Adding game to list and broadcasting changes to menu
+                                playersGames.add(game);
+                                sendBroadcast(Globals.Games);
 
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
@@ -229,13 +195,60 @@ public class DatabaseService extends Service {
                         }
                     }
                 });
-
-        return games;
     }
 
-    public void updateGameStatus(String gameId, String player, int correctAnswers){
+    public void updateGameStatus(final String gameId, final String playerName, final int correctAnswers){
+        db.collection("Games").document(gameId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                   DocumentSnapshot document = task.getResult();
 
-        //Gør noget med at opdatere spillet
+                   if(document.exists()){
+                       Object players = ((Map<String, Object>) document.getData().get("game")).get("players");
+
+                      ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
+
+                       for(Player player : playerArrayList){
+                           if(player.getName().equals(playerName)){
+                               player.setCorrectAnswers(correctAnswers);
+                               player.setFinishedQuiz(true);
+                           }
+                       }
+                       setPLayerStatus(gameId,playerArrayList);
+                   }
+                   else {
+                       Log.d(TAG, "No such document");
+                   }
+                }
+                else{
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+    private void setPLayerStatus(String gameId, ArrayList<Player> players){
+        db.collection("Games").document(gameId).update("game.players",players).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
+
+    private ArrayList<Player> convertFirestorePlayersToArrayList(Object players){
+        Gson gson = new Gson();
+        String json = gson.toJson(players);
+        Type type = new TypeToken<ArrayList<Player>>(){}.getType();
+        ArrayList<Player> playerArrayList = gson.fromJson(json,type);
+        return playerArrayList;
     }
 
     // -------------------------------------------------------------------------- //
@@ -253,9 +266,6 @@ public class DatabaseService extends Service {
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
-
-        sendOutStartGameNotification("sqMFS7E2n3u4RJViYvxR");
-
 
         return binder;
     }
@@ -277,7 +287,6 @@ public class DatabaseService extends Service {
         db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                documentSnapshot.get("active");
                 if((boolean)((Map<String,Object>)documentSnapshot.getData().get("game")).get("active"))
                 {
                     notification = new NotificationCompat.Builder(DatabaseService.this, "44")
@@ -289,17 +298,24 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
+            }
+        });
+        sendOutFinishNotificationIfTheGameIsFinished(quizId);
+    }
 
-                /*
-               ArrayList<Player> players = (ArrayList<Player>) ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+    public void sendOutFinishNotificationIfTheGameIsFinished(String quizId){
+        db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                Object players = ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+
+                ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
+
                 boolean quizPlayersFinish = false;
-                for (Player player : players){
-                    if(player.isFinishedQuiz()){
-                        quizPlayersFinish = true;
-                    }
-                    else
-                        quizPlayersFinish = false;
+                for (Player player : playerArrayList){
+                    quizPlayersFinish = player.isFinishedQuiz();
                 }
+
                 if(quizPlayersFinish){
                     notification = new NotificationCompat.Builder(DatabaseService.this, "44")
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -310,43 +326,7 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
-
-                 */
             }
         });
     }
 }
-
-
-
-
-/*//Hente Quiz med database kald
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("PersonaleQuizzes").document("De gode spørgsmål");
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        //Object quiz = document.getData();
-                        Map<String, Object> currentQuiz = document.getData();
-                        currentQizName = currentQuiz.get("name").toString();
-
-                        Object questionMap = currentQuiz.get("questions");
-
-//                        for(Map.Entry<String, Object> entry : questionMap.entrySet()) {
-//                            String key = entry.getKey();
-//                            HashMap value = entry.getValue();
-//
-//                            // do what you have to do here
-//                            // In your case, another loop.
-//                        }
-
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }*/
