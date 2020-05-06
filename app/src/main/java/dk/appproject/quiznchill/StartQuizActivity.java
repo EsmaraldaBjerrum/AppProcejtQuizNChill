@@ -127,6 +127,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         @Override
         public void onReceive(Context context, Intent intent) {
             String id = db.GameId;
+            db.sendOutStartGameNotification(id);
 
             for (int i=0; i < chosenQuestions.size(); i++ )
             {
