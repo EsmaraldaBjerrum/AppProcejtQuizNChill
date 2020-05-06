@@ -48,6 +48,7 @@ public class DatabaseService extends Service {
 
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
+    public String GameId = null;
 
     public DatabaseService() {
 
@@ -168,7 +169,7 @@ public class DatabaseService extends Service {
 
 
      */
-    public String addGame(Game newGame){
+    public void addGame(Game newGame){
 
         //Adding list of names to game object
         newGame.setPlayerNames(getListOfPlayerNames(newGame));
@@ -182,8 +183,9 @@ public class DatabaseService extends Service {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        id[0] = documentReference.getId();
+                        GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                        sendBroadcast(Globals.GameID);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -193,7 +195,6 @@ public class DatabaseService extends Service {
                     }
                 });
 
-        return id[0];
     }
 
     private List<String> getListOfPlayerNames(Game game){
@@ -289,6 +290,7 @@ public class DatabaseService extends Service {
                     startForeground(NOTIFY_ID,notification);
                 }
 
+                /*
                ArrayList<Player> players = (ArrayList<Player>) ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
                 boolean quizPlayersFinish = false;
                 for (Player player : players){
@@ -308,6 +310,8 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
+
+                 */
             }
         });
     }
