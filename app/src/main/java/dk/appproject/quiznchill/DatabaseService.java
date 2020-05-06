@@ -22,12 +22,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,56 +121,13 @@ public class DatabaseService extends Service {
     //-------------------------- CURRENT GAMES ----------------------//
     // --------------------------------------------------------------//
 
-    /*public Question [] getQuizQuestions(String quizName, boolean isPersonal){
-        HashMap<String, Object> result;
-        if(isPersonal){
-            db.collection(Globals.PersonalQuizzes)
-                    .whereEqualTo("name", quizName)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    result = document.getData();
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-        }else{
-            db.collection(Globals.APIQuizzes)
-                    .whereEqualTo("name", quizName)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    Log.d(TAG, document.getId() + " => " + document.getData());
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
-
-        }
-    }
-    private Quiz convertToQuestions(HashMap<String, Object> map){
-
-
-     */
     public String addGame(Game newGame){
 
-        //Adding list of names to game object
-        newGame.setPlayerNames(getListOfPlayerNames(newGame));
-
+        List<String> playerNames = getListOfPlayerNames(newGame);
         final String[] id = {null};
-        Map<String, Game> game = new HashMap<>();
+        Map<String, Object> game = new HashMap<>();
         game.put("game", newGame);
+        game.put("playerNames", playerNames);
 
         db.collection("Games")
                 .add(game)
@@ -201,10 +159,9 @@ public class DatabaseService extends Service {
         return names;
     }
 
-    List<Game> games = new ArrayList<>();
-    public List<Game> getPlayersGames(String playerName){
+    public List<Game> playersGames = new ArrayList<>();
+    public void getPlayersGames(String playerName){
 
-        // TODO: 04-05-2020 Virker ikke 
         db.collection("Games")
                 .whereArrayContainsAny("playerNames", Arrays.asList(playerName))
                 .get()
@@ -213,7 +170,17 @@ public class DatabaseService extends Service {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //games.add(document.getData().get("game"));
+
+                                //Converting document to Game
+                                Object gameObject = document.getData().get("game");
+                                GsonBuilder gsonbuilder = new GsonBuilder();
+                                Gson gson = gsonbuilder.create();
+                                String json = gson.toJson(gameObject);
+                                Game game = gson.fromJson(json, Game.class);
+
+                                //Adding game to list and broadcasting changes to menu
+                                playersGames.add(game);
+                                sendBroadcast(Globals.Games);
 
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
@@ -222,8 +189,6 @@ public class DatabaseService extends Service {
                         }
                     }
                 });
-
-        return games;
     }
 
     public void updateGameStatus(String gameId, String player, int correctAnswers){

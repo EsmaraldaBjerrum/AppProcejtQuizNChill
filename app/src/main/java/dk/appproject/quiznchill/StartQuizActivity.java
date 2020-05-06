@@ -93,7 +93,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
                 List<Player> players = new ArrayList<>();
                 players = chosenOpponents;
-                if(personal) {
+                if(!personal) {
                     players.add(user);
                 }
                 Game game = new Game(players, chosenQuiz, (personal ? user : null), true);

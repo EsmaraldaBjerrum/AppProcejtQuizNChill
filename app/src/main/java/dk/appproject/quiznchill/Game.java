@@ -1,14 +1,24 @@
 package dk.appproject.quiznchill;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public class Game {
 
+    @SerializedName("players")
+    @Expose
     private List<Player> players;
+    @SerializedName("quizName")
+    @Expose
     private String quizName;
+    @SerializedName("quizMaster")
+    @Expose
     private Player quizMaster;
+    @SerializedName("isActive")
+    @Expose
     private boolean isActive;
-    private List<String> playerNames;
 
     public Game(List<Player> players, String quizName, Player quizMaster, boolean isActive) {
         this.players = players;
@@ -46,13 +56,5 @@ public class Game {
 
     public void setActive(boolean active) {
         isActive = active;
-    }
-
-    public List<String> getPlayerNames() {
-        return playerNames;
-    }
-
-    public void setPlayerNames(List<String> playerNames) {
-        this.playerNames = playerNames;
     }
 }
