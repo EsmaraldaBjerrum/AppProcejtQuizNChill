@@ -46,6 +46,7 @@ public class DatabaseService extends Service {
 
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
+    public String GameId = null;
 
     public DatabaseService() {
 
@@ -166,7 +167,7 @@ public class DatabaseService extends Service {
 
 
      */
-    public String addGame(Game newGame){
+    public void addGame(Game newGame){
 
         //Adding list of names to game object
         newGame.setPlayerNames(getListOfPlayerNames(newGame));
@@ -180,8 +181,9 @@ public class DatabaseService extends Service {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        id[0] = documentReference.getId();
+                        GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+                        sendBroadcast(Globals.GameID);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -191,7 +193,6 @@ public class DatabaseService extends Service {
                     }
                 });
 
-        return id[0];
     }
 
     private List<String> getListOfPlayerNames(Game game){
@@ -227,10 +228,7 @@ public class DatabaseService extends Service {
                     }
                 });
 
-        // TODO: For hvert spil en spiller har, skal vi have kaldt sendoutnotificationifgameisfinished.
-        // På den måde så lytter vi på hver
-
-        return games;
+               return games;
     }
 
     public void updateGameStatus(String gameId, String player, int correctAnswers){
