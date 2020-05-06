@@ -4,24 +4,20 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -29,7 +25,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -229,6 +227,9 @@ public class DatabaseService extends Service {
                     }
                 });
 
+        // TODO: For hvert spil en spiller har, skal vi have kaldt sendoutnotificationifgameisfinished.
+        // På den måde så lytter vi på hver
+
         return games;
     }
 
@@ -253,9 +254,6 @@ public class DatabaseService extends Service {
             manager.createNotificationChannel(serviceChannel);
         }
 
-        sendOutStartGameNotification("sqMFS7E2n3u4RJViYvxR");
-
-
         return binder;
     }
 
@@ -276,7 +274,6 @@ public class DatabaseService extends Service {
         db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                documentSnapshot.get("active");
                 if((boolean)((Map<String,Object>)documentSnapshot.getData().get("game")).get("active"))
                 {
                     notification = new NotificationCompat.Builder(DatabaseService.this, "44")
@@ -288,16 +285,28 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
+            }
+        });
+        sendOutFinishNotificationIfTheGameIsFinished(quizId);
+    }
 
-               ArrayList<Player> players = (ArrayList<Player>) ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+    public void sendOutFinishNotificationIfTheGameIsFinished(String quizId){
+        db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                Object players = ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+
+                Gson gson = new Gson();
+                String json = gson.toJson(players);
+
+                Type type = new TypeToken<ArrayList<Player>>(){}.getType();
+                ArrayList<Player> playerArrayList = gson.fromJson(json,type);
+
                 boolean quizPlayersFinish = false;
-                for (Player player : players){
-                    if(player.isFinishedQuiz()){
-                        quizPlayersFinish = true;
-                    }
-                    else
-                        quizPlayersFinish = false;
+                for (Player player : playerArrayList){
+                    quizPlayersFinish = player.isFinishedQuiz();
                 }
+
                 if(quizPlayersFinish){
                     notification = new NotificationCompat.Builder(DatabaseService.this, "44")
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -310,6 +319,7 @@ public class DatabaseService extends Service {
                 }
             }
         });
+
     }
 }
 
