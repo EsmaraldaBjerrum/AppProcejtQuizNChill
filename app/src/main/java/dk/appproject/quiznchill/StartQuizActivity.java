@@ -16,6 +16,9 @@ import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +54,8 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
         setupConnectionToService();
         bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(Globals.NewQuizzes));
+        LocalBroadcastManager.getInstance(this).registerReceiver(quizReceiver, new IntentFilter(Globals.NewQuizzes));
+        LocalBroadcastManager.getInstance(this).registerReceiver(idReceiver, new IntentFilter(Globals.GameID));
 
         quizView = findViewById(R.id.rvStartQuizQuizzes);
         quizView.setHasFixedSize(true);
@@ -97,24 +101,13 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                     players.add(user);
                 }
                 Game game = new Game(players, chosenQuiz, (personal ? user : null), true);
-                String id = db.addGame(game);
-
-                // TODO: 04-05-2020 Map Hashmap til Question 
-                Intent intent = new Intent(StartQuizActivity.this, QuestionActivity.class);
-                intent.putExtra(Globals.Questions, (Serializable) chosenQuestions);
-                intent.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
-
-                //ADDED EXTRA
-                intent.putExtra(Globals.User, (Serializable) user);
-
-                intent.putExtra(Globals.GameID, id);
-                startActivity(intent);
+                db.addGame(game);
             }
         });
 
     }
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver quizReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -130,6 +123,36 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         }
     };
 
+    private BroadcastReceiver idReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String id = db.GameId;
+
+            for (int i=0; i < chosenQuestions.size(); i++ )
+            {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                String json = gson.toJson(chosenQuestions.get(i));
+                json = json.replace("incorrectAnswers", "incorrect_answers");
+                json = json.replace("correctAnswer", "correct_answer");
+                json = json.replace("\\u0026#039;", "'");
+                json = json.replace("\\u0026quot;", "\"");
+                json = json.replace("\\u0026amp;", "&");
+                Question q = gson.fromJson(json, Question.class);
+                chosenQuestions.remove(i);
+                chosenQuestions.add(i, q);
+            }
+
+            Intent intentActivity = new Intent(StartQuizActivity.this, QuestionActivity.class);
+            intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
+            intentActivity.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
+
+            //ADDED EXTRA
+            intentActivity.putExtra(Globals.User, (Serializable) user);
+            intentActivity.putExtra(Globals.GameID, id);
+            startActivity(intentActivity);
+        }
+    };
 
     private void setupConnectionToService() {
         serviceConnection = new ServiceConnection() {
@@ -137,7 +160,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 db = (((DatabaseService.DatabaseServiceBinder) binder).getService());
                 db.getApiQuizzes();
             }
-
             public void onServiceDisconnected(ComponentName className) {
                 db = null;
             }
@@ -147,13 +169,12 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(quizReceiver);
         super.onDestroy();
     }
 
     @Override
     public void onQuizClick(int position) {
-
         chosenQuiz = quizList.get(position);
         chosenQuestions = (List<Question>)quizzes.get(position).get(Globals.Questions);
         quizAdapter.notifyDataSetChanged();
