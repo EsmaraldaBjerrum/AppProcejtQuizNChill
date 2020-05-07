@@ -30,4 +30,6 @@
     <string name="Personale">Personal</string>
     <string name="GameIsFinish">The game is finish</string>
     <string name="YouGotAGame">You got a game</string>
+    <string name="WaitingForOpponentsToBeFinish">Waiting for opponents to be finish</string>
+    <string name="FriendsAreStillPlaying">Friends are still playing</string>
 </resources>

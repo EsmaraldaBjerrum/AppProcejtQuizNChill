@@ -38,7 +38,6 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 1337;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private CallbackManager callbackManager;
@@ -49,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private Button btnOK;
     private ApiService apiService;
     private ServiceConnection serviceConnection;
-
-
-    TextView test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
