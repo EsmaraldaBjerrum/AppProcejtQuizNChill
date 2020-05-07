@@ -16,11 +16,15 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.OnListItemListener{
 
@@ -49,7 +53,8 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
         //Setup of database
         setupConnectionToDatabaseService();
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(Globals.Games));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiverGames, new IntentFilter(Globals.Games));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiverQuiz, new IntentFilter(Globals.GameFromMenu));
 
         Bundle extras = getIntent().getExtras();
         opponents = (Opponents) extras.getSerializable(Globals.Opponents);
@@ -63,7 +68,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         currentGamesRecyclerView.setHasFixedSize(false);
         menuListLayoutManager = new LinearLayoutManager(this);
         currentGamesRecyclerView.setLayoutManager(menuListLayoutManager);
-        menuListAdaptor = new MenuListAdaptor(games,this);
+        menuListAdaptor = new MenuListAdaptor(games, user,this);
         currentGamesRecyclerView.setAdapter(menuListAdaptor);
 
         //Buttons functionality
@@ -92,21 +97,69 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     }
 
     @Override
-    public void onListItemClick(int index) {
-        //Check status på spil
-        //Send videre til Question hvis status er igang
+    public void onListItemClick(int position) {
+        if(games.get(position).isActive()){
+            //Check if user i quiz master
+            if(games.get(position).getQuizMaster().equals(user.getName())){
+                Toast.makeText(getApplicationContext(), "Friends are still playing", Toast.LENGTH_SHORT);
+            }else{
+                //Iteration through players to find current user
+                for(Player p : games.get(position).getPlayers()){
+                    if(p.getName().equals(user.getName())){
+                        if(p.isFinishedQuiz()){
+                            Toast.makeText(getApplicationContext(), "Waiting for opponents", Toast.LENGTH_SHORT).show();
+                        }else{
+                        databaseService.getQuizForGame(games.get(position).getQuizName());
+                        }
+                    }
+                }
+            }
+        }else {
+            Toast.makeText(getApplicationContext(), "Game is finished", Toast.LENGTH_SHORT).show();
+        }
     }
 
-
+    //-------------------------------------------------------------------------//
     //--------------------- Broadcast from Database service -------------------//
+    //-------------------------------------------------------------------------//
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver receiverGames = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             games.clear();
             games = databaseService.playersGames;
             menuListAdaptor.setPlayersGames(games);
             menuListAdaptor.notifyDataSetChanged();
+        }
+    };
+
+    private BroadcastReceiver receiverQuiz = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            Map<String, Object> quiz = databaseService.QuizFromMenu;
+            List<Question> questions = (List<Question>)quiz.get(Globals.Questions);
+
+            for (int i=0; i < questions.size(); i++ )
+            {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                String json = gson.toJson(questions.get(i));
+                json = json.replace("incorrectAnswers", "incorrect_answers");
+                json = json.replace("correctAnswer", "correct_answer");
+                json = json.replace("\\u0026#039;", "'");
+                json = json.replace("\\u0026quot;", "\"");
+                json = json.replace("\\u0026amp;", "&");
+                Question q = gson.fromJson(json, Question.class);
+                questions.remove(i);
+                questions.add(i, q);
+            }
+
+            Intent intentActivity = new Intent(MenuActivity.this, QuestionActivity.class);
+            intentActivity.putExtra(Globals.Questions, (Serializable) questions);
+            intentActivity.putExtra(Globals.User, (Serializable) user);
+            //intentActivity.putExtra(Globals.GameID, id);
+            startActivity(intentActivity);
         }
     };
 

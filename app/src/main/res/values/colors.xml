@@ -6,4 +6,8 @@
     <color name="colorBackground">#000000</color>
     <color name="colorHeadline">#0358E3</color>
     <color name="colorText">#C1DEFF</color>
+    <color name="colorWaitingForOpponents">#A8FFAC</color>
+    <color name="colorWaitingToBePlayed">#00FF0A</color>
+    <color name="colorWinner">#FFC310</color>
+    <color name="colorLoser">#494B4C</color>
 </resources>

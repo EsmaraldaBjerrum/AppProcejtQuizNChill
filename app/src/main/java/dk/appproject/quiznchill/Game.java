@@ -16,15 +16,15 @@ public class Game {
     @SerializedName("quizMaster")
     @Expose
     private Player quizMaster;
-    @SerializedName("isActive")
+    @SerializedName("active")
     @Expose
-    private boolean isActive;
+    private boolean active;
 
-    public Game(List<Player> players, String quizName, Player quizMaster, boolean isActive) {
+    public Game(List<Player> players, String quizName, Player quizMaster, boolean active) {
         this.players = players;
         this.quizName = quizName;
         this.quizMaster = quizMaster;
-        this.isActive = isActive;
+        this.active = active;
     }
     public List<Player> getPlayers() {
         return players;
@@ -51,10 +51,10 @@ public class Game {
     }
 
     public boolean isActive() {
-        return isActive;
+        return this.active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
 }

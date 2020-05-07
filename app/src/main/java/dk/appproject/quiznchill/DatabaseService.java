@@ -123,6 +123,37 @@ public class DatabaseService extends Service {
         });
     }
 
+    public Map<String, Object> QuizFromMenu = new HashMap<>();
+    public void getQuizForGame(String quizName){
+        QuizFromMenu.clear();
+        //Sørg for at den sender en quiz ud til MEnu
+        db.collection(Globals.APIQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        QuizFromMenu = document.getData();
+                    }
+                }
+            }
+        });
+        if(QuizFromMenu.isEmpty()){
+            db.collection(Globals.PersonalQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            QuizFromMenu = document.getData();
+                        }
+                    }
+                }
+            });
+        }
+        sendBroadcast(Globals.GameFromMenu);
+    }
+
 
     // --------------------------------------------------------------//
     //-------------------------- CURRENT GAMES ----------------------//
@@ -152,7 +183,6 @@ public class DatabaseService extends Service {
                         Log.w(TAG, "Error adding document", e);
                     }
                 });
-
     }
 
     private List<String> getListOfPlayerNames(Game game){
@@ -187,10 +217,9 @@ public class DatabaseService extends Service {
 
                                 //Adding game to list and broadcasting changes to menu
                                 playersGames.add(game);
-                                sendBroadcast(Globals.Games);
-
                                 Log.d(TAG, document.getId() + " => " + document.getData());
                             }
+                            sendBroadcast(Globals.Games);
                         } else {
                             Log.w(TAG, "Error getting documents.", task.getException());
                         }

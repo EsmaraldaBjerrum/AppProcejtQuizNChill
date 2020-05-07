@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
+                    // TODO: 07-05-2020 sæt den på igen, men ved ikke om det så fejler
                     //userPlayer = new Player(user.getDisplayName(), userPlayer.getFacebookId());
                     userPlayer = new Player(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
