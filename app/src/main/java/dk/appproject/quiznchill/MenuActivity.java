@@ -1,5 +1,6 @@
 package dk.appproject.quiznchill;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -78,7 +79,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 Intent goToStartQuiz = new Intent(MenuActivity.this, StartQuizActivity.class);
                 goToStartQuiz.putExtra(Globals.Opponents, opponents);
                 goToStartQuiz.putExtra(Globals.User, (Serializable) user);
-                startActivity(goToStartQuiz);
+                startActivityForResult(goToStartQuiz, Globals.RequestCode);
             }
         });
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -193,5 +194,16 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 Log.d(TAG, "DbService disconnected");
             }
         };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Globals.RequestCode)
+        {
+            Toast.makeText(getApplicationContext(), "You have finished the quiz!", Toast.LENGTH_SHORT);
+            databaseService.getPlayersGames(user.getName());
+        }
     }
 }

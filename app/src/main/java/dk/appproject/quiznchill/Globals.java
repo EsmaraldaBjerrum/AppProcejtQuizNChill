@@ -21,4 +21,6 @@ public class Globals {
     public static final String Games = "games";
 
     public static final String GameFromMenu = "gameFromMenu";
+
+    public static final int RequestCode = 1;
 }
