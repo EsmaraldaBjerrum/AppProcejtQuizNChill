@@ -21,4 +21,14 @@ public class Globals {
     public static final String Games = "Games";
 
     public static final String GameFromMenu = "gameFromMenu";
+
+    public static final String GameActive = "game.active";
+
+    public static final String Game = "game";
+
+    public static final String Players = "players";
+
+    public static final String Active = "active";
+
+    public static final String GamesPlayers = "games.players";
 }

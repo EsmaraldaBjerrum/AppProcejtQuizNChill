@@ -23,7 +23,6 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".ResultActivity" />
         <activity android:name=".QuestionActivity" />
         <activity android:name=".StartQuizActivity" />
         <activity android:name=".CreateQuizActivity" />

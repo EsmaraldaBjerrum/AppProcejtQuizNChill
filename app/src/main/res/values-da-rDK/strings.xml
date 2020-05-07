@@ -20,4 +20,14 @@
     <string name="forkert_svar">Forkert svar</string>
     <string name="v_du_tabte_quizzen">Du tabte quizzen</string>
     <string name="yay_du_vandt_quizzen">Du vandt quizzen!</string>
+    <string name="YouGotAGame">Du har en quiz</string>
+    <string name="Welcome" translatable="false">"Velkommen til "</string>
+    <string name="Name">QUIZ n CHILL</string>
+    <string name="ChooseQuiz">Vælg quiz</string>
+    <string name="LetsGo">Start!</string>
+    <string name="ChooseOpponents">Vælg modstandere</string>
+    <string name="Personal">Personlige</string>
+    <string name="Public">Offentlige</string>
+    <string name="Personale">Personlige</string>
+    <string name="GameIsFinish">Quizzen er slut</string>
 </resources>

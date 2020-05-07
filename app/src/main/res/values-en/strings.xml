@@ -20,4 +20,14 @@
     <string name="facebook_app_id">521035771914571</string>
     <string name="appTitle">Quiz N\' Chill</string>
     <string name="btnStartQuiz">Start Quiz!</string>
+    <string name="YouGotAGame">You got a game</string>
+    <string name="Welcome">Welcome to</string>
+    <string name="LetsGo">Let\'s go!</string>
+    <string name="Name">QUIZ n CHILL</string>
+    <string name="ChooseQuiz">Choose quiz</string>
+    <string name="ChooseOpponents">Choose Opponents</string>
+    <string name="Personal">Personal</string>
+    <string name="Public">Public</string>
+    <string name="Personale">Personal</string>
+    <string name="GameIsFinish">The game is finish</string>
 </resources>
