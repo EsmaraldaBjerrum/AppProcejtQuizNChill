@@ -1,5 +1,6 @@
 package dk.appproject.quiznchill;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -91,11 +93,30 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 startActivityForResult(goToCreateQuiz, CreateCode);
             }
         });
+
+        if(savedInstanceState != null)
+        {
+            games = (List<Game>) savedInstanceState.getSerializable(Globals.Games);
+            menuListAdaptor.setPlayersGames(games);
+            menuListAdaptor.notifyDataSetChanged();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        bindToDataBaseService();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindFromDatabaseService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         bindToDataBaseService();
     }
 
@@ -200,5 +221,11 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 Log.d(TAG, "DbService disconnected");
             }
         };
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(Globals.Games, (Serializable) games);
     }
 }

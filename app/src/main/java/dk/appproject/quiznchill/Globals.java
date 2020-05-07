@@ -30,5 +30,5 @@ public class Globals {
 
     public static final String Active = "active";
 
-    public static final String GamesPlayers = "games.players";
+    public static final String GamePlayers = "game.players";
 }

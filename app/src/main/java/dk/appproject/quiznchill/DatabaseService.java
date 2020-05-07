@@ -136,24 +136,28 @@ public class DatabaseService extends Service {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 QuizFromMenu = document.getData();
                             }
-                            sendBroadcast(Globals.GameFromMenu);
+                            if(!QuizFromMenu.isEmpty()){
+                                sendBroadcast(Globals.GameFromMenu);
+                            }
                         }
                     }
                 });
         if(QuizFromMenu.isEmpty()){
-            db.collection(Globals.PersonalQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            QuizFromMenu = document.getData();
+            db.collection(Globals.PersonalQuizzes).whereEqualTo(Globals.QuizName, quizName).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    QuizFromMenu = document.getData();
+                                }
+                                if(!QuizFromMenu.isEmpty()){
+                                    sendBroadcast(Globals.GameFromMenu);
+                                }
+                            }
                         }
-                    }
-                }
-            });
+                    });
         }
-
     }
 
     // --------------------------------------------------------------//
@@ -261,7 +265,7 @@ public class DatabaseService extends Service {
 
     }
     private void setPLayerStatus(String gameId, ArrayList<Player> players){
-        db.collection(Globals.Games).document(gameId).update(Globals.GamesPlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection(Globals.Games).document(gameId).update(Globals.GamePlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "DocumentSnapshot succesfully updated!");
