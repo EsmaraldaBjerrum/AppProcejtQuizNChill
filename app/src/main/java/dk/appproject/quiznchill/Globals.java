@@ -28,6 +28,8 @@ public class Globals {
 
     public static final String Players = "players";
 
+    public static final String PlayerNames = "playerNames";
+
     public static final String Active = "active";
 
     public static final String GamePlayers = "game.players";

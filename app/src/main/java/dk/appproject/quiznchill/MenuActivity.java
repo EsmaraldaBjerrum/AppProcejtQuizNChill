@@ -110,15 +110,9 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindFromDatabaseService();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        bindToDataBaseService();
     }
 
     @Override
@@ -192,7 +186,9 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         }
     };
 
+    //----------------------------------------------------------------------//
     //--------------------- Binding til Database service -------------------//
+    //----------------------------------------------------------------------//
 
     private void unbindFromDatabaseService() {
         if(bound){
