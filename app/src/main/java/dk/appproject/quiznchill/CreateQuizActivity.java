@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,26 +25,36 @@ public class CreateQuizActivity extends AppCompatActivity {
     private DatabaseService databaseService;
     private String TAG = "CreateQuizActivity";
     private boolean bound;
+    private EditText edtQuizName, edtQuestion, edtCorrectAnswer, edtWrongAnswerOne, edtWrongAnswerTwo;
+    private ArrayList<Question> questions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_quiz);
-        final List<Question> questions = new ArrayList<>();
 
-        final EditText edtQuizName = findViewById(R.id.edtTxtCreateQuizQuizName);
-        final EditText edtQuestion = findViewById(R.id.edtTxtCreateQuizQuestion);
-        final EditText edtCorrectAnswer = findViewById(R.id.edtTxtCreateQuizCorrectAnswer);
-        final EditText edtWrongAnswerOne = findViewById(R.id.edtTxtCreateQuizWrongAnswerOne);
-        final EditText edtWrongAnswerTwo = findViewById(R.id.edtTxtCreateQuizWrongAnswerTwo);
+
+         edtQuizName = findViewById(R.id.edtTxtCreateQuizQuizName);
+         edtQuestion = findViewById(R.id.edtTxtCreateQuizQuestion);
+         edtCorrectAnswer = findViewById(R.id.edtTxtCreateQuizCorrectAnswer);
+         edtWrongAnswerOne = findViewById(R.id.edtTxtCreateQuizWrongAnswerOne);
+         edtWrongAnswerTwo = findViewById(R.id.edtTxtCreateQuizWrongAnswerTwo);
         Button addQuestionBtn = findViewById(R.id.btnCreateQuizAddQuestion);
         Button okBtn = findViewById(R.id.btnCreateQuizOk);
+
+        if(savedInstanceState != null){
+            edtQuizName.setText(savedInstanceState.getString(Globals.QuizName));
+            edtQuestion.setText(savedInstanceState.getString(Globals.Question));
+            edtCorrectAnswer.setText(savedInstanceState.getString(Globals.CorrectAnswer));
+            edtWrongAnswerOne.setText(savedInstanceState.getString(Globals.WrongAnswerOne));
+            edtWrongAnswerTwo.setText(savedInstanceState.getString(Globals.WrongAnswerTwo));
+            questions = (ArrayList<Question>) savedInstanceState.get(Globals.Questions);
+        }
 
        addQuestionBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               List<String> incorrectAnswers = new ArrayList<>();
-
+               ArrayList<String> incorrectAnswers = new ArrayList<>();
                incorrectAnswers.add(edtWrongAnswerOne.getText().toString());
                incorrectAnswers.add(edtWrongAnswerTwo.getText().toString());
                Question question = new Question(
@@ -53,6 +65,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                );
 
                questions.add(question);
+               Toast.makeText(getApplicationContext(), "Spørgsmålet er tilføjet", Toast.LENGTH_LONG);
                edtQuestion.getText().clear();
                edtCorrectAnswer.getText().clear();
                edtWrongAnswerOne.getText().clear();
@@ -66,27 +79,9 @@ public class CreateQuizActivity extends AppCompatActivity {
            public void onClick(View v) {
 
             databaseService.addQuizToDb(questions,edtQuizName.getText().toString(), true);
+               Toast.makeText(getApplicationContext(), "Quizzen er tilføjet", Toast.LENGTH_LONG);
             Log.d(TAG, "Questions added");
             finish();
-
-            //TEST CODE
-               /*List<String> wQ = new ArrayList<>();
-               wQ.add("deidheu");
-               wQ.add("dedede");
-               Question q = new Question("String category", "String question", "String correctAnswer", wQ);
-               Question q2 = new Question("String category", "String question", "String correctAnswer", wQ);
-               List<Question> qs = new ArrayList<>();
-               qs.add(q);
-               qs.add(q2);
-               databaseService.addQuizToDb(qs, "hatterMaD", true);*/
-
-               /*Player player1 = new Player("Kurt", 888, 0, false);
-               Player player2 = new Player("Lone", 908, 0, false);
-               Player[] players = new Player[2];
-               players[0] = player1;
-               players[1] = player2;
-               Game game = new Game(Arrays.asList(players), "De gode quiz", player1, true);
-               databaseService.AddGame(game);*/
            }
        });
     }
@@ -104,6 +99,18 @@ public class CreateQuizActivity extends AppCompatActivity {
         unbindFromDatabaseService();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(Globals.QuizName, edtQuizName.getText().toString());
+        savedInstanceState.putString(Globals.Question, edtQuestion.getText().toString());
+        savedInstanceState.putString(Globals.CorrectAnswer, edtCorrectAnswer.getText().toString());
+        savedInstanceState.putString(Globals.WrongAnswerOne, edtWrongAnswerOne.getText().toString());
+        savedInstanceState.putString(Globals.WrongAnswerTwo, edtWrongAnswerTwo.getText().toString());
+        savedInstanceState.putSerializable(Globals.Questions, questions);
+    }
+
     private void unbindFromDatabaseService() {
         if(bound){
             unbindService(databaseServiceConnection);
@@ -115,7 +122,7 @@ public class CreateQuizActivity extends AppCompatActivity {
 
     private void bindToDataBaseService() {
         bindService(new Intent(CreateQuizActivity.this, DatabaseService.class), databaseServiceConnection, Context.BIND_AUTO_CREATE);
-       bound = true;
+        bound = true;
         Log.d(TAG, "Databaseservice binded");
     }
 
@@ -124,10 +131,8 @@ public class CreateQuizActivity extends AppCompatActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
-
                 // When the connection is established, the current word is fetched from the database
                 Log.d(TAG, "Databaseservice connected");
-
             }
 
             @Override

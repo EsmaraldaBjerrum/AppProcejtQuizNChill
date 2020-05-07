@@ -30,5 +30,13 @@ public class Globals {
 
     public static final String Active = "active";
 
-    public static final String GamesPlayers = "games.players";
+    public static final String GamePlayers = "game.players";
+
+    public static final String Question = "Question";
+
+    public static final String CorrectAnswer = "Correct Answer";
+
+    public static final String WrongAnswerOne = "Wrong Answer One";
+
+    public static final String WrongAnswerTwo = "Wrong Answer Two";
 }

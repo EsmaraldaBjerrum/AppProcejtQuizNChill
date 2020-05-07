@@ -30,4 +30,6 @@
     <string name="Public">Offentlige</string>
     <string name="Personale">Personlige</string>
     <string name="GameIsFinish">Quizzen er slut</string>
+    <string name="WaitingForOpponentsToBeFinish">Venter på at modstandere er færdige</string>
+    <string name="FriendsAreStillPlaying">Dine venner spiller stadigvæk</string>
 </resources>

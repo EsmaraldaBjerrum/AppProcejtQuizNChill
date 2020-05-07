@@ -106,14 +106,14 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             //Check if user i quiz master
             if(games.get(position).getQuizMaster() != null){
                 if(games.get(position).getQuizMaster().equals(user.getName())){
-                    Toast.makeText(getApplicationContext(), "Friends are still playing", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), R.string.FriendsAreStillPlaying, Toast.LENGTH_SHORT);
                 }
             }else{
                 //Iteration through players to find current user
                 for(Player p : games.get(position).getPlayers()){
                     if(p.getName().equals(user.getName())){
                         if(p.isFinishedQuiz()){
-                            Toast.makeText(getApplicationContext(), "Waiting for opponents", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), R.string.WaitingForOpponentsToBeFinish, Toast.LENGTH_SHORT).show();
                         }else{
                         databaseService.getQuizForGame(games.get(position).getQuizName());
                         }

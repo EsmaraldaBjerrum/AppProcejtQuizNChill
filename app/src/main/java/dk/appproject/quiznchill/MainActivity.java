@@ -35,7 +35,6 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int RC_SIGN_IN = 1337;
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private CallbackManager callbackManager;
@@ -44,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
     private Opponents opponents = new Opponents();
     private Player userPlayer;
     private Button btnOK;
-
-
-    TextView test;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

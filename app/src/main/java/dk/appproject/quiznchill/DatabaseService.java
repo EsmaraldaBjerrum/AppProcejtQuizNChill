@@ -261,7 +261,7 @@ public class DatabaseService extends Service {
 
     }
     private void setPLayerStatus(String gameId, ArrayList<Player> players){
-        db.collection(Globals.Games).document(gameId).update(Globals.GamesPlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection(Globals.Games).document(gameId).update(Globals.GamePlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "DocumentSnapshot succesfully updated!");
@@ -313,8 +313,8 @@ public class DatabaseService extends Service {
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
 
-    public void sendOutStartGameNotification(String quizId) {
-        db.collection(Globals.Games).document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    public void sendOutStartGameNotification(String gameId) {
+        db.collection(Globals.Games).document(gameId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 if((boolean)((Map<String,Object>)documentSnapshot.getData().get(Globals.Game)).get(Globals.Active))
@@ -330,11 +330,11 @@ public class DatabaseService extends Service {
                 }
             }
         });
-        sendOutFinishNotificationIfTheGameIsFinished(quizId);
+        sendOutFinishNotificationIfTheGameIsFinished(gameId);
     }
 
-    public void sendOutFinishNotificationIfTheGameIsFinished(final String quizId){
-        db.collection(Globals.Games).document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    public void sendOutFinishNotificationIfTheGameIsFinished(final String gameId){
+        db.collection(Globals.Games).document(gameId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Object players = ((Map<String, Object>) documentSnapshot.getData().get(Globals.Game)).get(Globals.Players);
@@ -347,7 +347,7 @@ public class DatabaseService extends Service {
                 }
 
                 if(quizPlayersFinish){
-                    setGameAsFinish(quizId);
+                    setGameAsFinish(gameId);
                     notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setContentTitle(getString(R.string.app_name))
