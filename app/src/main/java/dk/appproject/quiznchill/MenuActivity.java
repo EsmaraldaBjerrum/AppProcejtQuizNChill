@@ -110,8 +110,8 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindFromDatabaseService();
     }
 
@@ -148,8 +148,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     private BroadcastReceiver receiverGames = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            games.clear();
-            games = databaseService.playersGames;
+            games = new ArrayList<>(databaseService.playersGames);
             menuListAdaptor.setPlayersGames(games);
             menuListAdaptor.notifyDataSetChanged();
         }
@@ -233,7 +232,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         if (requestCode == Globals.RequestCode)
         {
             Toast.makeText(getApplicationContext(), "You have finished the quiz!", Toast.LENGTH_SHORT);
-            databaseService.getPlayersGames(user.getName());
+            //databaseService.getPlayersGames(user.getName());
         }
     }
 }

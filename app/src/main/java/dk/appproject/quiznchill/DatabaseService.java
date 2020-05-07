@@ -202,7 +202,7 @@ public class DatabaseService extends Service {
 
     public List<Game> playersGames = new ArrayList<>();
     public void getPlayersGames(String playerName){
-
+        playersGames.clear();
         db.collection(Globals.Games)
                 .whereArrayContainsAny(Globals.PlayerNames, Arrays.asList(playerName))
                 .get()
