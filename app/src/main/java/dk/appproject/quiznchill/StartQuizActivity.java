@@ -36,7 +36,8 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     private DatabaseService db;
     private ServiceConnection serviceConnection;
     private boolean personal;
-    private List<Question> chosenQuestions;
+    private List<Question> chosenQuestionsHashMaps;
+    private List<Question> chosenQuestions = new ArrayList<>();
     private List<Player> chosenOpponents = new ArrayList<>();
     private List<Map<String, Object>> quizzes;
     private Opponents opponents;
@@ -127,29 +128,27 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         @Override
         public void onReceive(Context context, Intent intent) {
             String id = db.GameId;
+            chosenQuestions.clear();
             db.sendOutStartGameNotification(id);
 
-            for (int i=0; i < chosenQuestions.size(); i++ )
+            for (int i = 0; i < chosenQuestionsHashMaps.size(); i++ )
             {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
-                String json = gson.toJson(chosenQuestions.get(i));
+                String json = gson.toJson(chosenQuestionsHashMaps.get(i));
                 json = json.replace("incorrectAnswers", "incorrect_answers");
                 json = json.replace("correctAnswer", "correct_answer");
                 json = json.replace("\\u0026#039;", "'");
-                json = json.replace("\\u0026quot;", "\"");
+                json = json.replace("\\u0026quot;", "'");
                 json = json.replace("\\u0026amp;", "&");
                 Question q = gson.fromJson(json, Question.class);
-                chosenQuestions.remove(i);
-                chosenQuestions.add(i, q);
+                chosenQuestions.add(q);
             }
 
             Intent intentActivity = new Intent(StartQuizActivity.this, QuestionActivity.class);
             intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
             intentActivity.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
-
-            //ADDED EXTRA
-            intentActivity.putExtra(Globals.User, (Serializable) user);
+            intentActivity.putExtra(Globals.User, user);
             intentActivity.putExtra(Globals.GameID, id);
             startActivity(intentActivity);
         }
@@ -171,13 +170,16 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     @Override
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(quizReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(idReceiver);
+        unbindService(serviceConnection);
+
         super.onDestroy();
     }
 
     @Override
     public void onQuizClick(int position) {
         chosenQuiz = quizList.get(position);
-        chosenQuestions = (List<Question>)quizzes.get(position).get(Globals.Questions);
+        chosenQuestionsHashMaps = (List<Question>)quizzes.get(position).get(Globals.Questions);
         quizAdapter.notifyDataSetChanged();
     }
 
