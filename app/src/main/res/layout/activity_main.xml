@@ -9,25 +9,27 @@
 
     <Button
         android:id="@+id/btnMainOK"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="150dp"
         android:background="@color/colorHeadline"
         android:text="@string/LetsGo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvMainUser" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/btnFacebookLogin"
         android:layout_width="195dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="352dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMainTitel"
         app:layout_constraintVertical_bias="0.292" />
 
     <TextView
@@ -59,14 +61,14 @@
 
     <TextView
         android:id="@+id/tvMainUser"
-        android:layout_width="200dp"
-        android:layout_height="34dp"
-        android:layout_marginBottom="292dp"
+        android:layout_width="301dp"
+        android:layout_height="45dp"
         android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnMainOK"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnFacebookLogin" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
