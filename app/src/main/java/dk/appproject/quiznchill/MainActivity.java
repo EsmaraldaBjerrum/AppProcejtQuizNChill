@@ -47,7 +47,9 @@ public class MainActivity extends AppCompatActivity {
     private Player userPlayer;
     private Button btnOK;
     private ApiService apiService;
-    private ServiceConnection serviceConnection;
+    private DatabaseService databaseService;
+    private ServiceConnection databaseServiceConnection;
+    private boolean bound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
+
+        setupConnectionToDatabaseService();
 
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
 
@@ -106,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                  */
                 {
                     userPlayer = new Player(user.getDisplayName());
-                    userPlayer = new Player(user.getDisplayName());
+                    databaseService.addUserToPlayerCollection(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
@@ -114,6 +118,47 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindToDataBaseService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindFromDatabaseService();
+    }
+
+    private void unbindFromDatabaseService() {
+        if(bound){
+            unbindService(databaseServiceConnection);
+            bound = false;
+            Log.d(TAG, "DbService unbinded");
+        }
+    }
+
+    private void bindToDataBaseService() {
+        bindService(new Intent(MainActivity.this, DatabaseService.class), databaseServiceConnection, Context.BIND_AUTO_CREATE);
+        bound = true;
+        Log.d(TAG, "Databaseservice binded");
+    }
+
+    private void setupConnectionToDatabaseService() {
+        databaseServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
+                Log.d(TAG, "DbService connected");
+            }
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                databaseService = null;
+                Log.d(TAG, "DbService disconnected");
+            }
+        };
     }
 
     //Kald for venner
@@ -172,16 +217,4 @@ public class MainActivity extends AppCompatActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void setupConnectionToService() {
-        serviceConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName className, IBinder binder) {
-                apiService = (((ApiService.ServiceBinder) binder).getService());
-                apiService.getQuiz();
-            }
-            public void onServiceDisconnected(ComponentName className) {
-                apiService = null;
-            }
-
-        };
-    }
 }

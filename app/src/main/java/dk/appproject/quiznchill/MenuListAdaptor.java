@@ -77,6 +77,7 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
             }
         }else{
             //Iterate through players to find highest answer rate
+            // ToDo: Det ligger på GameObjektet nu, så du burde vel bare kunne hente det derfra nu
             List<String> currentWinner = new ArrayList<>();
             int currentHigh = 0;
             for(Player p : games.get(position).getPlayers()){
