@@ -31,4 +31,6 @@ public class Globals {
     public static final String Active = "active";
 
     public static final String GamePlayers = "game.players";
+
+    public static final int RequestCode = 1;
 }

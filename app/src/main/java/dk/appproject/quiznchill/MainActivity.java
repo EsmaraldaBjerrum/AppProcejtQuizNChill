@@ -5,9 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private Opponents opponents = new Opponents();
     private Player userPlayer;
     private Button btnOK;
+    private ApiService apiService;
+    private ServiceConnection serviceConnection;
 
 
     TextView test;
@@ -59,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
+
+        /* IS USED TO GET NEW API QUIZZES
+        setupConnectionToService();
+        bindService(new Intent(MainActivity.this, ApiService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+         */
 
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
@@ -99,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    //userPlayer = new Player(user.getDisplayName(), user.getUid());
+                    userPlayer = new Player(user.getDisplayName());
                     userPlayer = new Player(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
@@ -164,5 +174,18 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void setupConnectionToService() {
+        serviceConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                apiService = (((ApiService.ServiceBinder) binder).getService());
+                apiService.getQuiz();
+            }
+            public void onServiceDisconnected(ComponentName className) {
+                apiService = null;
+            }
+
+        };
     }
 }
