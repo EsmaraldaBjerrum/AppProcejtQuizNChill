@@ -227,9 +227,58 @@ public class DatabaseService extends Service {
                 });
     }
 
-    public void updateGameStatus(String gameId, String player, int correctAnswers){
+    public void updateGameStatus(final String gameId, final String playerName, final int correctAnswers){
+        db.collection("Games").document(gameId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                   DocumentSnapshot document = task.getResult();
 
-        //Gør noget med at opdatere spillet
+                   if(document.exists()){
+                       Object players = ((Map<String, Object>) document.getData().get("game")).get("players");
+
+                      ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
+
+                       for(Player player : playerArrayList){
+                           if(player.getName().equals(playerName)){
+                               player.setCorrectAnswers(correctAnswers);
+                               player.setFinishedQuiz(true);
+                           }
+                       }
+                       setPLayerStatus(gameId,playerArrayList);
+                   }
+                   else {
+                       Log.d(TAG, "No such document");
+                   }
+                }
+                else{
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+    }
+    private void setPLayerStatus(String gameId, ArrayList<Player> players){
+        db.collection("Games").document(gameId).update("game.players",players).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
+
+    private ArrayList<Player> convertFirestorePlayersToArrayList(Object players){
+        Gson gson = new Gson();
+        String json = gson.toJson(players);
+        Type type = new TypeToken<ArrayList<Player>>(){}.getType();
+        ArrayList<Player> playerArrayList = gson.fromJson(json,type);
+        return playerArrayList;
     }
 
     // -------------------------------------------------------------------------- //
@@ -290,11 +339,7 @@ public class DatabaseService extends Service {
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
                 Object players = ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
 
-                Gson gson = new Gson();
-                String json = gson.toJson(players);
-
-                Type type = new TypeToken<ArrayList<Player>>(){}.getType();
-                ArrayList<Player> playerArrayList = gson.fromJson(json,type);
+                ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
 
                 boolean quizPlayersFinish = false;
                 for (Player player : playerArrayList){

@@ -42,9 +42,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private Opponents opponents = new Opponents();
-    private ApiService service;
-    private ServiceConnection serviceConnection;
     private Player userPlayer;
+    private Button btnOK;
 
 
     TextView test;
@@ -61,8 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
 
-        // TODO: 04-05-2020
-        // Sikre at man ikke behøver at logge ud for for at få venner med
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        if (user != null) {
+            sendGraphRequest(user);
+            updateUI(user);
+        }
 
         facebookLogin.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -80,9 +82,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        Button login = findViewById(R.id.btnMainOK);
+        btnOK = findViewById(R.id.btnMainOK);
+        btnOK.setEnabled(false);
 
-        login.setOnClickListener(new View.OnClickListener() {
+        btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -96,9 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    // TODO: 07-05-2020 sæt den på igen, men ved ikke om det så fejler
-                    //userPlayer = new Player(user.getDisplayName(), userPlayer.getFacebookId());
-                    userPlayer = new Player(user.getDisplayName());
+                    userPlayer = new Player(user.getDisplayName(), userPlayer.getFacebookId());
+                    //userPlayer = new Player(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
@@ -113,26 +115,17 @@ public class MainActivity extends AppCompatActivity {
         GraphRequest graphRequest = GraphRequest.newGraphPathRequest(AccessToken.getCurrentAccessToken(), "/me/friends", new GraphRequest.Callback() {
             @Override
             public void onCompleted(GraphResponse response) {
-                // TODO: 04-05-2020 Enable button
                 Log.d(TAG, "onCompleted: Den klarede api kald" + response.toString());
 
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
 
                 opponents = gson.fromJson(response.getRawResponse(), Opponents.class);
+                btnOK.setEnabled(false);
             }
         });
 
         graphRequest.executeAsync();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if(user != null){
-            updateUI(user);
-        }
     }
 
     private void handleFacebookToken(AccessToken token){
@@ -162,9 +155,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
     private void updateUI(FirebaseUser user){
-        // TODO: 04-05-2020
-        // Sæt det korrekt op med at der vises hvilken spiller der er logget på
-        //test.setText(user.getDisplayName());
+        TextView tvUser = findViewById(R.id.tvMainUser);
+        tvUser.setText(user.getDisplayName());
     }
 
 
