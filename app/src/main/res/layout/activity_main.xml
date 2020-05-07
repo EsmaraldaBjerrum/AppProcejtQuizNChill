@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnFacebookLogin" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMainUser" />
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/btnFacebookLogin"
@@ -34,15 +34,14 @@
         android:id="@+id/tvMainTitel"
         android:layout_width="384dp"
         android:layout_height="91dp"
-        android:layout_marginTop="176dp"
-        android:layout_marginBottom="172dp"
+        android:layout_marginTop="20dp"
         android:autoText="true"
         android:text="@string/Name"
         android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvMainWelcome" />
 
     <TextView
         android:id="@+id/tvMainWelcome"

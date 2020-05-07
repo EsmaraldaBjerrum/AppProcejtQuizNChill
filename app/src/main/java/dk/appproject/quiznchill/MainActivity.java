@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    userPlayer = new Player(user.getDisplayName(), userPlayer.getFacebookId());
-                    //userPlayer = new Player(user.getDisplayName());
+                    //userPlayer = new Player(user.getDisplayName(), user.getUid());
+                    userPlayer = new Player(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 Gson gson = gsonBuilder.create();
 
                 opponents = gson.fromJson(response.getRawResponse(), Opponents.class);
-                btnOK.setEnabled(false);
+                btnOK.setEnabled(true);
             }
         });
 
@@ -158,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
         TextView tvUser = findViewById(R.id.tvMainUser);
         tvUser.setText(user.getDisplayName());
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

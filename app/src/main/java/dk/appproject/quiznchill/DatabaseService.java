@@ -127,17 +127,18 @@ public class DatabaseService extends Service {
     public void getQuizForGame(String quizName){
         QuizFromMenu.clear();
         //Sørg for at den sender en quiz ud til MEnu
-        db.collection(Globals.APIQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        QuizFromMenu = document.getData();
+        db.collection(Globals.APIQuizzes).whereEqualTo(Globals.QuizName, quizName).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                QuizFromMenu = document.getData();
+                            }
+                            sendBroadcast(Globals.GameFromMenu);
+                        }
                     }
-                }
-            }
-        });
+                });
         if(QuizFromMenu.isEmpty()){
             db.collection(Globals.PersonalQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -151,9 +152,8 @@ public class DatabaseService extends Service {
                 }
             });
         }
-        sendBroadcast(Globals.GameFromMenu);
-    }
 
+    }
 
     // --------------------------------------------------------------//
     //-------------------------- CURRENT GAMES ----------------------//
@@ -167,7 +167,7 @@ public class DatabaseService extends Service {
         game.put("game", newGame);
         game.put("playerNames", playerNames);
 
-        db.collection("Games")
+        db.collection(Globals.Games)
                 .add(game)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -214,6 +214,8 @@ public class DatabaseService extends Service {
                                 Gson gson = gsonbuilder.create();
                                 String json = gson.toJson(gameObject);
                                 Game game = gson.fromJson(json, Game.class);
+
+                                game.setGameId(document.getId());
 
                                 //Adding game to list and broadcasting changes to menu
                                 playersGames.add(game);

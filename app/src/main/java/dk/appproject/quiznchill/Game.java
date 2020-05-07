@@ -7,6 +7,9 @@ import java.util.List;
 
 public class Game {
 
+    @SerializedName("gameId")
+    @Expose
+    private String gameId;
     @SerializedName("players")
     @Expose
     private List<Player> players;
@@ -56,5 +59,13 @@ public class Game {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 }

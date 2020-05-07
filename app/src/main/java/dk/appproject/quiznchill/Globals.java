@@ -18,7 +18,7 @@ public class Globals {
 
     public static final String GameID = "gameID";
 
-    public static final String Games = "games";
+    public static final String Games = "Games";
 
     public static final String GameFromMenu = "gameFromMenu";
 }
