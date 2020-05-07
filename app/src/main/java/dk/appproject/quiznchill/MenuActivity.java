@@ -1,5 +1,7 @@
 package dk.appproject.quiznchill;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +15,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -81,7 +84,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 Intent goToStartQuiz = new Intent(MenuActivity.this, StartQuizActivity.class);
                 goToStartQuiz.putExtra(Globals.Opponents, opponents);
                 goToStartQuiz.putExtra(Globals.User, (Serializable) user);
-                startActivity(goToStartQuiz);
+                startActivityForResult(goToStartQuiz, Globals.RequestCode);
             }
         });
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -91,11 +94,30 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 startActivityForResult(goToCreateQuiz, CreateCode);
             }
         });
+
+        if(savedInstanceState != null)
+        {
+            games = (List<Game>) savedInstanceState.getSerializable(Globals.Games);
+            menuListAdaptor.setPlayersGames(games);
+            menuListAdaptor.notifyDataSetChanged();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        bindToDataBaseService();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unbindFromDatabaseService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         bindToDataBaseService();
     }
 
@@ -200,5 +222,22 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
                 Log.d(TAG, "DbService disconnected");
             }
         };
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(Globals.Games, (Serializable) games);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Globals.RequestCode)
+        {
+            Toast.makeText(getApplicationContext(), "You have finished the quiz!", Toast.LENGTH_SHORT);
+            databaseService.getPlayersGames(user.getName());
+        }
     }
 }

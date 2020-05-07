@@ -1,5 +1,6 @@
 package dk.appproject.quiznchill;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,6 +51,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         setContentView(R.layout.activity_start_quiz);
 
         Bundle extras = getIntent().getExtras();
+        assert extras != null;
         opponents = (Opponents) extras.getSerializable(Globals.Opponents);
         user = (Player) extras.getSerializable(Globals.User);
 
@@ -96,8 +98,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             @Override
             public void onClick(View v) {
 
-                List<Player> players = new ArrayList<>();
-                players = chosenOpponents;
+                List<Player> players = chosenOpponents;
                 if(!personal) {
                     players.add(user);
                 }
@@ -146,7 +147,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
             intentActivity.putExtra(Globals.User, user);
             intentActivity.putExtra(Globals.GameID, id);
-            startActivity(intentActivity);
+            startActivityForResult(intentActivity, Globals.RequestCode);
         }
     };
 
@@ -188,5 +189,13 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         }
         else
             chosenOpponents.remove(position);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Globals.RequestCode);
+            finish();
     }
 }

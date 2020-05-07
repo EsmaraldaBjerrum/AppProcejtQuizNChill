@@ -24,6 +24,7 @@ public class ApiService extends Service {
     private DatabaseService db;
     private ServiceConnection serviceConnection;
 
+
     public ApiService() {
     }
 
@@ -49,7 +50,7 @@ public class ApiService extends Service {
             queue = Volley.newRequestQueue(this);
         }
 
-        String url = "https://opentdb.com/api.php?amount=10";
+        String url = "https://opentdb.com/api.php?amount=10&category=30&type=multiple";
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

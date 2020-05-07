@@ -39,4 +39,6 @@ public class Globals {
     public static final String WrongAnswerOne = "Wrong Answer One";
 
     public static final String WrongAnswerTwo = "Wrong Answer Two";
+
+    public static final int RequestCode = 1;
 }
