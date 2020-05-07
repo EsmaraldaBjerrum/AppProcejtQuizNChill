@@ -106,7 +106,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 db.addGame(game);
             }
         });
-
     }
 
     private BroadcastReceiver quizReceiver = new BroadcastReceiver() {
@@ -114,13 +113,11 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         public void onReceive(Context context, Intent intent) {
 
             quizList.clear();
-
             quizzes = (personal ? db.PersonalQuizzes : db.APIQuizzes);
 
             for (Map<String, Object> quiz : quizzes) {
                 quizList.add(quiz.get(Globals.QuizName).toString());
             }
-
             quizAdapter.notifyDataSetChanged();
         }
     };
@@ -148,7 +145,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
 
             Intent intentActivity = new Intent(StartQuizActivity.this, QuestionActivity.class);
             intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
-            intentActivity.putExtra(Globals.Opponents, (Serializable) chosenOpponents);
             intentActivity.putExtra(Globals.User, user);
             intentActivity.putExtra(Globals.GameID, id);
             startActivityForResult(intentActivity, Globals.RequestCode);

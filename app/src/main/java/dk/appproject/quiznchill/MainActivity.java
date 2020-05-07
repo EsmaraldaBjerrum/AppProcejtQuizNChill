@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnOK = findViewById(R.id.btnMainOK);
-      //  btnOK.setEnabled(false);
+        btnOK.setEnabled(false);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
+                    userPlayer = new Player(user.getDisplayName());
                     userPlayer = new Player(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
@@ -167,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
         TextView tvUser = findViewById(R.id.tvMainUser);
         tvUser.setText(user.getDisplayName());
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

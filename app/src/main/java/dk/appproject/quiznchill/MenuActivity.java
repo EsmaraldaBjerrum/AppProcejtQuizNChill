@@ -46,11 +46,14 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     private Opponents opponents;
     private Player user;
     private List<Game> games = new ArrayList<>();
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        position = 0;
 
         //Setup of database
         setupConnectionToDatabaseService();
@@ -99,10 +102,13 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
     @Override
     public void onListItemClick(int position) {
+        this.position = position;
         if(games.get(position).isActive()){
             //Check if user i quiz master
-            if(games.get(position).getQuizMaster().equals(user.getName())){
-                Toast.makeText(getApplicationContext(), "Friends are still playing", Toast.LENGTH_SHORT);
+            if(games.get(position).getQuizMaster() != null){
+                if(games.get(position).getQuizMaster().equals(user.getName())){
+                    Toast.makeText(getApplicationContext(), "Friends are still playing", Toast.LENGTH_SHORT);
+                }
             }else{
                 //Iteration through players to find current user
                 for(Player p : games.get(position).getPlayers()){
@@ -138,28 +144,29 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            List<Question> questions = new ArrayList<>();
             Map<String, Object> quiz = databaseService.QuizFromMenu;
-            List<Question> questions = (List<Question>)quiz.get(Globals.Questions);
+            List<Question> questionsHashMaps = (List<Question>)quiz.get(Globals.Questions);
 
-            for (int i=0; i < questions.size(); i++ )
+
+            for (int i = 0; i < questionsHashMaps.size(); i++ )
             {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
-                String json = gson.toJson(questions.get(i));
+                String json = gson.toJson(questionsHashMaps.get(i));
                 json = json.replace("incorrectAnswers", "incorrect_answers");
                 json = json.replace("correctAnswer", "correct_answer");
                 json = json.replace("\\u0026#039;", "'");
-                json = json.replace("\\u0026quot;", "\"");
+                json = json.replace("\\u0026quot;", "'");
                 json = json.replace("\\u0026amp;", "&");
                 Question q = gson.fromJson(json, Question.class);
-                questions.remove(i);
-                questions.add(i, q);
+                questions.add(q);
             }
 
             Intent intentActivity = new Intent(MenuActivity.this, QuestionActivity.class);
             intentActivity.putExtra(Globals.Questions, (Serializable) questions);
             intentActivity.putExtra(Globals.User, (Serializable) user);
-            //intentActivity.putExtra(Globals.GameID, id);
+            intentActivity.putExtra(Globals.GameID, games.get(position).getGameId());
             startActivity(intentActivity);
         }
     };

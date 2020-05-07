@@ -40,6 +40,7 @@ public class DatabaseService extends Service {
 
     private static final String TAG = DatabaseService.class.getSimpleName();
     private static final int NOTIFY_ID = 142;
+    private static final String ChannelId = "42";
     Notification notification = new Notification();
 
     // Access a Cloud Firestore instance from your Activity
@@ -127,17 +128,18 @@ public class DatabaseService extends Service {
     public void getQuizForGame(String quizName){
         QuizFromMenu.clear();
         //Sørg for at den sender en quiz ud til MEnu
-        db.collection(Globals.APIQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        QuizFromMenu = document.getData();
+        db.collection(Globals.APIQuizzes).whereEqualTo(Globals.QuizName, quizName).get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                QuizFromMenu = document.getData();
+                            }
+                            sendBroadcast(Globals.GameFromMenu);
+                        }
                     }
-                }
-            }
-        });
+                });
         if(QuizFromMenu.isEmpty()){
             db.collection(Globals.PersonalQuizzes).document(quizName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
@@ -151,9 +153,8 @@ public class DatabaseService extends Service {
                 }
             });
         }
-        sendBroadcast(Globals.GameFromMenu);
-    }
 
+    }
 
     // --------------------------------------------------------------//
     //-------------------------- CURRENT GAMES ----------------------//
@@ -162,12 +163,11 @@ public class DatabaseService extends Service {
     public void addGame(Game newGame){
 
         List<String> playerNames = getListOfPlayerNames(newGame);
-        final String[] id = {null};
         Map<String, Object> game = new HashMap<>();
         game.put("game", newGame);
         game.put("playerNames", playerNames);
 
-        db.collection("Games")
+        db.collection(Globals.Games)
                 .add(game)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -209,11 +209,13 @@ public class DatabaseService extends Service {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
                                 //Converting document to Game
-                                Object gameObject = document.getData().get("game");
+                                Object gameObject = document.getData().get(Globals.Game);
                                 GsonBuilder gsonbuilder = new GsonBuilder();
                                 Gson gson = gsonbuilder.create();
                                 String json = gson.toJson(gameObject);
                                 Game game = gson.fromJson(json, Game.class);
+
+                                game.setGameId(document.getId());
 
                                 //Adding game to list and broadcasting changes to menu
                                 playersGames.add(game);
@@ -228,14 +230,14 @@ public class DatabaseService extends Service {
     }
 
     public void updateGameStatus(final String gameId, final String playerName, final int correctAnswers){
-        db.collection("Games").document(gameId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(Globals.Games).document(gameId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if(task.isSuccessful()){
                    DocumentSnapshot document = task.getResult();
 
                    if(document.exists()){
-                       Object players = ((Map<String, Object>) document.getData().get("game")).get("players");
+                       Object players = ((Map<String, Object>) document.getData().get(Globals.Game)).get(Globals.Players);
 
                       ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
 
@@ -259,7 +261,7 @@ public class DatabaseService extends Service {
 
     }
     private void setPLayerStatus(String gameId, ArrayList<Player> players){
-        db.collection("Games").document(gameId).update("game.players",players).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection(Globals.Games).document(gameId).update(Globals.GamesPlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.d(TAG, "DocumentSnapshot succesfully updated!");
@@ -277,8 +279,7 @@ public class DatabaseService extends Service {
         Gson gson = new Gson();
         String json = gson.toJson(players);
         Type type = new TypeToken<ArrayList<Player>>(){}.getType();
-        ArrayList<Player> playerArrayList = gson.fromJson(json,type);
-        return playerArrayList;
+        return gson.fromJson(json,type);
     }
 
     // -------------------------------------------------------------------------- //
@@ -289,14 +290,13 @@ public class DatabaseService extends Service {
     public IBinder onBind(Intent intent) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
-                    "44",
+                    ChannelId,
                     "Notification Service Channel",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(serviceChannel);
         }
-
         return binder;
     }
 
@@ -314,15 +314,15 @@ public class DatabaseService extends Service {
     // ------------------------------------------------------------- //
 
     public void sendOutStartGameNotification(String quizId) {
-        db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        db.collection(Globals.Games).document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if((boolean)((Map<String,Object>)documentSnapshot.getData().get("game")).get("active"))
+                if((boolean)((Map<String,Object>)documentSnapshot.getData().get(Globals.Game)).get(Globals.Active))
                 {
-                    notification = new NotificationCompat.Builder(DatabaseService.this, "44")
+                    notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Quiz N' Chill")
-                            .setContentText("You got a game")
+                            .setContentTitle(getString(R.string.app_name))
+                            .setContentText(getString(R.string.YouGotAGame))
                             .build();
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
                     notificationManagerCompat.notify(1337,notification);
@@ -333,11 +333,11 @@ public class DatabaseService extends Service {
         sendOutFinishNotificationIfTheGameIsFinished(quizId);
     }
 
-    public void sendOutFinishNotificationIfTheGameIsFinished(String quizId){
-        db.collection("Games").document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    public void sendOutFinishNotificationIfTheGameIsFinished(final String quizId){
+        db.collection(Globals.Games).document(quizId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                Object players = ((Map<String, Object>) documentSnapshot.getData().get("game")).get("players");
+                Object players = ((Map<String, Object>) documentSnapshot.getData().get(Globals.Game)).get(Globals.Players);
 
                 ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
 
@@ -347,10 +347,11 @@ public class DatabaseService extends Service {
                 }
 
                 if(quizPlayersFinish){
-                    notification = new NotificationCompat.Builder(DatabaseService.this, "44")
+                    setGameAsFinish(quizId);
+                    notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle("Quiz N' Chill")
-                            .setContentText("The game is finish")
+                            .setContentTitle(getString(R.string.app_name))
+                            .setContentText(getString(R.string.GameIsFinish))
                             .build();
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
                     notificationManagerCompat.notify(1337,notification);
@@ -358,5 +359,20 @@ public class DatabaseService extends Service {
                 }
             }
         });
+    }
+
+    private void setGameAsFinish(String gameId){
+        db.collection(Globals.Games).document(gameId).update(Globals.GameActive,false).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
     }
 }

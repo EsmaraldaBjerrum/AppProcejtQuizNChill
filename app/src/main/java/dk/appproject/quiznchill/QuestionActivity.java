@@ -148,6 +148,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             databaseService.updateGameStatus(currentQuizId, currentPlayer.getName(), correctAnswers);
             //EVT broadcast?
             finish();
+            // TODO: 07-05-2020 Hop tilbage til menu 
         }
     }
 
