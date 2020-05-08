@@ -11,48 +11,54 @@
         android:id="@+id/txtQuestionHeader"
         android:layout_width="190dp"
         android:layout_height="43dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
         android:text="@string/questionHeader"
         android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.25"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/txtQuestionText"
-        android:layout_width="320dp"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@color/colorText"
         android:gravity="center"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer1"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtQuestionHeader" />
+        app:layout_constraintTop_toBottomOf="@+id/txtQuestionHeader"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btnQuestionAnswer1"
         android:layout_width="300dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
         android:background="@color/colorHeadline"
-        app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/txtQuestionHeader" />
 
     <Button
         android:id="@+id/btnQuestionAnswer2"
         android:layout_width="300dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="20dp"
         android:background="@color/colorHeadline"
         app:layout_constraintBottom_toTopOf="@+id/btnQuestionAnswer3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toBottomOf="@+id/btnQuestionAnswer1" />
 
     <Button
         android:id="@+id/btnQuestionAnswer3"
@@ -62,5 +68,12 @@
         android:background="@color/colorHeadline"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>

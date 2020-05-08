@@ -32,4 +32,5 @@
     <string name="GameIsFinish">The game is finish</string>
     <string name="WaitingForOpponentsToBeFinish">Waiting for opponents to be finish</string>
     <string name="FriendsAreStillPlaying">Friends are still playing</string>
+    <string name="forkert_svar_hint2">Second wrong answer</string>
 </resources>
