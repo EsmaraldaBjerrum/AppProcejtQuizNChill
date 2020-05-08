@@ -49,8 +49,8 @@ public class DatabaseService extends Service {
 
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
-    private ArrayList<String> activeQuizzes;
-    private ArrayList<String> finishedQuizzes;
+    private ArrayList<String> activeQuizzes = new ArrayList<>();
+    private ArrayList<String> finishedQuizzes = new ArrayList<>();
     public String GameId = null;
 
     public DatabaseService() {
@@ -165,7 +165,7 @@ public class DatabaseService extends Service {
 
     public void addGame(Game newGame){
 
-        List<String> playerNames = getListOfPlayerNames(newGame);
+        final List<String> playerNames = getListOfPlayerNames(newGame);
         Map<String, Object> game = new HashMap<>();
         game.put(Globals.Game, newGame);
         game.put(Globals.PlayerNames, playerNames);
@@ -177,8 +177,9 @@ public class DatabaseService extends Service {
                     public void onSuccess(DocumentReference documentReference) {
                         GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        sendBroadcast(Globals.GameID);
                         activeQuizzes.add(GameId);
+                        updateActiveQuizzes(playerNames);
+                        sendBroadcast(Globals.GameID);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -188,6 +189,21 @@ public class DatabaseService extends Service {
                     }
                 });
     }
+
+    private void updateActiveQuizzes(List<String> playerNamesInCurrentGame){
+        for(String playerName : playerNamesInCurrentGame) {
+            db.collection(Globals.PLayers).document(playerName).update(Globals.ActiveQuizzes, activeQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "DocumentSnapshot succesfully updated!");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "Error updating document", e);
+                }
+            });
+        }}
 
     private List<String> getListOfPlayerNames(Game game){
         List<String> names = new ArrayList<>();
