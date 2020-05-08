@@ -267,7 +267,6 @@ public class DatabaseService extends Service {
                                player.setFinishedQuiz(true);
                                updatePlayersGameStatus(playerName,gameId);
                                activeQuizzes.remove(gameId);
-                               //setGameAsFinish(gameId, playerArrayList);
                            }
                            if(player.isFinishedQuiz()){
                                isAllFinished++;

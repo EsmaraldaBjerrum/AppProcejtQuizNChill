@@ -87,15 +87,14 @@ public class CreateQuizActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
-        setupConnectionToDatabaseService();
+    protected void onStart() {
+        super.onStart();
         bindToDataBaseService();
     }
 
     @Override
-    protected void onPause(){
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         unbindFromDatabaseService();
     }
 
