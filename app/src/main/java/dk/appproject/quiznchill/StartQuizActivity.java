@@ -142,11 +142,15 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
                 chosenQuestions.add(q);
             }
 
-            Intent intentActivity = new Intent(StartQuizActivity.this, QuestionActivity.class);
-            intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
-            intentActivity.putExtra(Globals.User, user);
-            intentActivity.putExtra(Globals.GameID, id);
-            startActivityForResult(intentActivity, Globals.RequestCode);
+            if(personal){
+                finish();
+            }else{
+                Intent intentActivity = new Intent(StartQuizActivity.this, QuestionActivity.class);
+                intentActivity.putExtra(Globals.Questions, (Serializable) chosenQuestions);
+                intentActivity.putExtra(Globals.User, user);
+                intentActivity.putExtra(Globals.GameID, id);
+                startActivityForResult(intentActivity, Globals.RequestCode);
+            }
         }
     };
 
@@ -159,7 +163,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
             public void onServiceDisconnected(ComponentName className) {
                 db = null;
             }
-
         };
     }
 

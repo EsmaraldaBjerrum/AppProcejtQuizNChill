@@ -30,8 +30,11 @@
     <string name="Public">Public</string>
     <string name="Personale">Personal</string>
     <string name="GameIsFinish">The game is finish</string>
-    <string name="WaitingForOpponentsToBeFinish">Waiting for opponents to be finish</string>
+    <string name="WaitingForOpponentsToBeFinish">Waiting for opponents to finish</string>
     <string name="FriendsAreStillPlaying">Friends are still playing</string>
     <string name="forkert_svar_hint2">Second wrong answer</string>
     <string name="NotificationText">"Changes has happened in Quiz'N'Chill.  Go check it out "</string>
+    <string name="playGamePrompt">Play game!</string>
+    <string name="winner">Winner:</string>
+    <string name="multipleWinners">More than one winner!</string>
 </resources>

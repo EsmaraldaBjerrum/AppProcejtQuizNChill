@@ -23,7 +23,7 @@ public class Game implements Serializable {
     @SerializedName("active")
     @Expose
     private boolean active;
-    @SerializedName("quizWinner")
+    @SerializedName("winner")
     @Expose
     private List<String> winners;
 

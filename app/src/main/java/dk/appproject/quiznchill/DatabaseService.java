@@ -160,7 +160,7 @@ public class DatabaseService extends Service {
     }
 
     // --------------------------------------------------------------//
-    //-------------------------- CURRENT GAMES ----------------------//
+    //----------------------------- GAMES ---------------------------//
     // --------------------------------------------------------------//
 
     public void addGame(Game newGame){
@@ -210,7 +210,7 @@ public class DatabaseService extends Service {
             names.add(p.getName());
         }
         if(game.getQuizMaster() !=null) {
-            names.add(game.getQuizMaster().toString());
+            names.add(game.getQuizMaster().getName());
         }
         return names;
     }
@@ -235,6 +235,7 @@ public class DatabaseService extends Service {
                                 Game game = gson.fromJson(json, Game.class);
 
                                 game.setGameId(document.getId());
+                                game.setWinners((List<String>) document.getData().get(Globals.Winners));
 
                                 //Adding game to list and broadcasting changes to menu
                                 playersGames.add(game);
@@ -259,15 +260,21 @@ public class DatabaseService extends Service {
                        Object players = ((Map<String, Object>) document.getData().get(Globals.Game)).get(Globals.Players);
 
                       ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
-
+                      int isAllFinished = 0;
                        for(Player player : playerArrayList){
                            if(player.getName().equals(playerName)){
                                player.setCorrectAnswers(correctAnswers);
                                player.setFinishedQuiz(true);
                                updatePlayersGameStatus(playerName,gameId);
                                activeQuizzes.remove(gameId);
-                               setGameAsFinish(gameId, playerArrayList);
+                               //setGameAsFinish(gameId, playerArrayList);
                            }
+                           if(player.isFinishedQuiz()){
+                               isAllFinished++;
+                           }
+                       }
+                       if(isAllFinished == playerArrayList.size()){
+                           setGameAsFinish(gameId, playerArrayList);
                        }
                        setPlayerStatus(gameId,playerArrayList);
                    }
@@ -282,6 +289,10 @@ public class DatabaseService extends Service {
         });
 
     }
+
+    // --------------------------------------------------------------//
+    //---------------------------- Players --------------------------//
+    // --------------------------------------------------------------//
 
     private void updatePlayersGameStatus(String playerName, String gameId) {
         db.collection(Globals.PLayers).document(playerName).update(Globals.FinishedQuizzes, finishedQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -385,14 +396,14 @@ public class DatabaseService extends Service {
     // ------------------------------------------------------------- //
 
     private void sendOutGameNotification(){
-                    notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle(getString(R.string.app_name))
-                            .setContentText(getString(R.string.NotificationText))
-                            .build();
-                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
-                    notificationManagerCompat.notify(1337,notification);
-                    startForeground(NOTIFY_ID,notification);
+        notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.NotificationText))
+                .build();
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
+        notificationManagerCompat.notify(1337,notification);
+        startForeground(NOTIFY_ID,notification);
      }
 
     // ---------------------------------------------- //

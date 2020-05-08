@@ -30,8 +30,11 @@
     <string name="Public">Offentlige</string>
     <string name="Personale">Personlige</string>
     <string name="GameIsFinish">Quizzen er slut</string>
-    <string name="WaitingForOpponentsToBeFinish">Venter på at modstandere er færdige</string>
+    <string name="WaitingForOpponentsToBeFinish">Modstandere spiller stadig</string>
     <string name="FriendsAreStillPlaying">Dine venner spiller stadigvæk</string>
-    <string name="forkert_svar_hint2">Second wrong answer</string>
+    <string name="forkert_svar_hint2">Forkert svar 2</string>
     <string name="NotificationText">Der er sket noget i Quiz\'N\'Chill. Tjek det ud!</string>
+    <string name="playGamePrompt">Spil!</string>
+    <string name="winner">"Vinder: "</string>
+    <string name="multipleWinners">Mere end én vinder!</string>
 </resources>
