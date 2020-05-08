@@ -67,18 +67,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         indexOfCorrectAnswer = 0;
 
         displayQuestion();
-
-
-        //TEST QUESTIONS
-        /*List<String> wQ = new ArrayList<>();
-        wQ.add("Dumb");
-        wQ.add("Boring and just a real piece of shit with no regards for human life and all that jazz");
-        Question q = new Question("Alice", "Hatter is what?", "Mad", wQ);
-        Question q2 = new Question("Alice", "Red Queen is what?", "Evil bitch", wQ);
-        Question[] qs = new Question[2];
-        qs[0] = q;
-        qs[1] = q2;
-        currentQuizQuestions = qs;*/
     }
 
     private void displayQuestion(){
@@ -119,6 +107,7 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
 
+        //Check if the option with correct answer is chosen
         switch (v.getId()) {
             case R.id.btnQuestionAnswer1:
                 if(indexOfCorrectAnswer == 1) {
@@ -146,11 +135,9 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             displayQuestion();
         }else {
             databaseService.updateGameStatus(currentQuizId, currentPlayer.getName(), correctAnswers);
-            //EVT broadcast?
             Intent intent = new Intent(QuestionActivity.this, StartQuizActivity.class);
             setResult(RESULT_CANCELED, intent);
             finish();
-            // TODO: 07-05-2020 Hop tilbage til menu 
         }
     }
 
@@ -165,15 +152,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
-    protected void onResume(){
-        super.onResume();
-        setupConnectionToDatabaseService();
-        bindToDataBaseService();
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
         unbindFromDatabaseService();
     }
 
@@ -206,9 +186,6 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             public void onServiceConnected(ComponentName name, IBinder service) {
                 databaseService = ((DatabaseService.DatabaseServiceBinder)service).getService();
                 Log.d(TAG, "DbService connected");
-
-                //currentQuizQuestions = databaseService.SOMETHING!(); //Her kaldes efter spørgsmålene
-
             }
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -217,26 +194,4 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
             }
         };
     }
-
-
-    //TEST CODE FOR ADDING GAME AND ADDING QUIZ
-
-        /*List<String> wQ = new ArrayList<>();
-        wQ.add("deidheu");
-        wQ.add("dedede");
-        Question q = new Question("String category", "String question", "String correctAnswer", wQ);
-        Question q2 = new Question("String category", "String question", "String correctAnswer", wQ);
-        List<Question> qs = new ArrayList<>();
-        qs.add(q);
-        qs.add(q2);
-        databaseService.addQuizToDb(qs, "hatterMaD", true);*/
-
-
-        /*Player player1 = new Player("Kurt", 888, 0, false);
-        Player player2 = new Player("Lone", 908, 0, false);
-        Player[] players = new Player[2];
-        players[0] = player1;
-        players[1] = player2;
-        Game game = new Game(players, "De gode quiz", player1, true);
-        databaseService.addGame(game);*/
 }

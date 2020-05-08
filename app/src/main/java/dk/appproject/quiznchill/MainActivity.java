@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     userPlayer = new Player(user.getDisplayName());
                     databaseService.addUserToPlayerCollection(user.getDisplayName());
-                    Intent intent = new Intent(MainActivity.this, StartQuizActivity.class);
+                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
                     startActivity(intent);

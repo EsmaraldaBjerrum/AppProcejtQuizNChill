@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListViewHolder> {
@@ -89,9 +88,9 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
                 }
             }
         }else{
-            //Setting the name of the winner or stating multiple wiiners
+            //Setting the name of the winner or stating multiple winners
             if(games.get(position).getWinners().size() == 1) {
-                holder.gameStatus.setText(R.string.winner + games.get(position).getWinners().get(0));
+                holder.gameStatus.setText(games.get(position).getWinners().get(0));
             }else{
                 holder.gameStatus.setText(R.string.multipleWinners);
             }

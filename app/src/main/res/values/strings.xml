@@ -34,7 +34,7 @@
     <string name="FriendsAreStillPlaying">Friends are still playing</string>
     <string name="forkert_svar_hint2">Second wrong answer</string>
     <string name="NotificationText">"Changes has happened in Quiz'N'Chill.  Go check it out "</string>
-    <string name="winner">"Winner: "</string>
+    <string name="winner">Winner: </string>
     <string name="playGamePrompt">Play game!</string>
     <string name="multipleWinners">More than one winner!</string>
 </resources>
