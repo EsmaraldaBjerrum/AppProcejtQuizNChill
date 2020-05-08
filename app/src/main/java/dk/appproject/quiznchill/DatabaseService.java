@@ -164,7 +164,6 @@ public class DatabaseService extends Service {
     // --------------------------------------------------------------//
 
     public void addGame(Game newGame){
-
         final List<String> playerNames = getListOfPlayerNames(newGame);
         Map<String, Object> game = new HashMap<>();
         game.put(Globals.Game, newGame);
@@ -177,7 +176,7 @@ public class DatabaseService extends Service {
                     public void onSuccess(DocumentReference documentReference) {
                         GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        activeQuizzes.add(GameId);
+
                         updateActiveQuizzes(playerNames);
                         sendBroadcast(Globals.GameID);
                     }
@@ -266,6 +265,7 @@ public class DatabaseService extends Service {
                                player.setCorrectAnswers(correctAnswers);
                                player.setFinishedQuiz(true);
                                updatePlayersGameStatus(playerName,gameId);
+                               activeQuizzes.remove(gameId);
                                setGameAsFinish(gameId, playerArrayList);
                            }
                        }
@@ -284,8 +284,6 @@ public class DatabaseService extends Service {
     }
 
     private void updatePlayersGameStatus(String playerName, String gameId) {
-        finishedQuizzes.add(gameId);
-        activeQuizzes.remove(gameId);
         db.collection(Globals.PLayers).document(playerName).update(Globals.FinishedQuizzes, finishedQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -337,6 +335,9 @@ public class DatabaseService extends Service {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
                     if(document.exists()){
+                        addListenerToUserDocument(playerName);
+                        activeQuizzes = (ArrayList<String>) document.get(Globals.ActiveQuizzes);
+                        finishedQuizzes = (ArrayList<String>) document.get(Globals.FinishedQuizzes);
                         Log.d(TAG, "User is already added to database");
                     }
                     else{
@@ -461,16 +462,17 @@ public class DatabaseService extends Service {
         db.collection(Globals.PLayers).document(userName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-
                 if(documentSnapshot.getData().get(Globals.ActiveQuizzes) != null){
                     ArrayList<String> activeGames = (ArrayList<String>) documentSnapshot.getData().get("activeGames");
                     if(activeGames.size() > activeQuizzes.size()){
+                        activeQuizzes = new ArrayList<>(activeGames);
                         sendOutStartGameNotification();
                     }
                 }
                 if (documentSnapshot.getData().get(Globals.FinishedQuizzes) != null) {
                     ArrayList<String> finishedGames = (ArrayList<String>) documentSnapshot.getData().get("finishedGames");
                     if(finishedGames.size() > finishedQuizzes.size()){
+                        finishedQuizzes = new ArrayList<>(finishedGames);
                         sendOutFinishedGameNotification();
                     }
                 }
