@@ -37,4 +37,7 @@
     <string name="playGamePrompt">Play game!</string>
     <string name="winner">Winner:</string>
     <string name="multipleWinners">More than one winner!</string>
+    <string name="YouHaveFinishedTheQuiz">You have finished the quiz!</string>
+    <string name="QuestionAdded">Question is added to the quiz</string>
+    <string name="QuizIsAdded">The quiz is added</string>
 </resources>

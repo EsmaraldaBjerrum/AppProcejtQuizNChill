@@ -65,7 +65,7 @@ public class CreateQuizActivity extends AppCompatActivity {
                );
 
                questions.add(question);
-               Toast.makeText(getApplicationContext(), "Spørgsmålet er tilføjet", Toast.LENGTH_LONG);
+               Toast.makeText(getApplicationContext(), R.string.QuestionAdded, Toast.LENGTH_LONG).show();
                edtQuestion.getText().clear();
                edtCorrectAnswer.getText().clear();
                edtWrongAnswerOne.getText().clear();
@@ -77,10 +77,8 @@ public class CreateQuizActivity extends AppCompatActivity {
        okBtn.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-
             databaseService.addQuizToDb(questions,edtQuizName.getText().toString(), true);
-               Toast.makeText(getApplicationContext(), "Quizzen er tilføjet", Toast.LENGTH_LONG);
-            Log.d(TAG, "Questions added");
+               Toast.makeText(getApplicationContext(), R.string.QuizIsAdded, Toast.LENGTH_LONG).show();
             finish();
            }
        });
@@ -89,12 +87,13 @@ public class CreateQuizActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        setupConnectionToDatabaseService();
         bindToDataBaseService();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unbindFromDatabaseService();
     }
 

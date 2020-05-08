@@ -179,6 +179,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     public void onQuizClick(int position) {
         chosenQuiz = quizList.get(position);
         chosenQuestionsHashMaps = (List<Question>)quizzes.get(position).get(Globals.Questions);
+        quizAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -196,7 +197,7 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Globals.RequestCode && resultCode == RESULT_OK);
+        if (requestCode == Globals.RequestCode && resultCode == RESULT_OK)
         {
             Intent intent = new Intent(StartQuizActivity.this, MenuActivity.class);
             setResult(RESULT_CANCELED, intent);
