@@ -1,9 +1,11 @@
 
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.dtos;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import dk.appproject.quiznchill.dtos.Question;
 
 public class Quiz {
 

@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,12 +11,17 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import dk.appproject.quiznchill.services.DatabaseService;
+import dk.appproject.quiznchill.Globals;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.dtos.Question;
+import dk.appproject.quiznchill.R;
 
 /* Shared onClickListener inspired by https://stackoverflow.com/questions/25905086/multiple-buttons-onclicklistener-android
 * */

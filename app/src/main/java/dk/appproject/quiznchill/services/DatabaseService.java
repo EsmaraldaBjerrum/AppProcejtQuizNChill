@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.services;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -35,6 +35,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import dk.appproject.quiznchill.dtos.Game;
+import dk.appproject.quiznchill.Globals;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.dtos.PlayerPerson;
+import dk.appproject.quiznchill.dtos.Question;
+import dk.appproject.quiznchill.R;
 
 public class DatabaseService extends Service {
 

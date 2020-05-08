@@ -1,7 +1,6 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -35,6 +34,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.Serializable;
+
+import dk.appproject.quiznchill.services.ApiService;
+import dk.appproject.quiznchill.services.DatabaseService;
+import dk.appproject.quiznchill.Globals;
+import dk.appproject.quiznchill.dtos.Opponents;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.R;
 
 public class MainActivity extends AppCompatActivity {
 

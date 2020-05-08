@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.adaptors;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import dk.appproject.quiznchill.R;
 
 public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.ViewHolder> {
 

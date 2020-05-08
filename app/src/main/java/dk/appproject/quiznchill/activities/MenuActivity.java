@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +15,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +28,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.OnListItemListener{
+import dk.appproject.quiznchill.services.DatabaseService;
+import dk.appproject.quiznchill.dtos.Game;
+import dk.appproject.quiznchill.Globals;
+import dk.appproject.quiznchill.adaptors.MenuListAdaptor;
+import dk.appproject.quiznchill.dtos.Opponents;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.dtos.Question;
+import dk.appproject.quiznchill.R;
+
+public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.OnListItemListener {
 
     private static final int StartCode = 117;
     private static final int CreateCode = 42;

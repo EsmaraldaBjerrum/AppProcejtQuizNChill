@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.adaptors;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,10 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+
+import dk.appproject.quiznchill.dtos.Game;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.R;
 
 public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListViewHolder> {
 

@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +24,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import dk.appproject.quiznchill.services.DatabaseService;
+import dk.appproject.quiznchill.dtos.Game;
+import dk.appproject.quiznchill.Globals;
+import dk.appproject.quiznchill.dtos.Opponents;
+import dk.appproject.quiznchill.dtos.Player;
+import dk.appproject.quiznchill.dtos.Question;
+import dk.appproject.quiznchill.R;
+import dk.appproject.quiznchill.adaptors.StringViewAdapter;
 
 public class StartQuizActivity extends AppCompatActivity implements StringViewAdapter.OnClickListener {
 

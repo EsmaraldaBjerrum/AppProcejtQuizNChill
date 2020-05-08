@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.services;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -17,6 +17,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import dk.appproject.quiznchill.dtos.Quiz;
 
 public class ApiService extends Service {
 

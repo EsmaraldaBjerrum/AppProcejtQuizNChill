@@ -15,19 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".ApiService"
+            android:name=".services.ApiService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".DatabaseService"
+            android:name=".services.DatabaseService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".QuestionActivity" />
-        <activity android:name=".StartQuizActivity" />
-        <activity android:name=".CreateQuizActivity" />
-        <activity android:name=".MenuActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activities.QuestionActivity" />
+        <activity android:name=".activities.StartQuizActivity" />
+        <activity android:name=".activities.CreateQuizActivity" />
+        <activity android:name=".activities.MenuActivity" />
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -57,7 +57,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".StartQuizActivity" />
+        <receiver android:name=".activities.StartQuizActivity" />
     </application>
 
 </manifest>

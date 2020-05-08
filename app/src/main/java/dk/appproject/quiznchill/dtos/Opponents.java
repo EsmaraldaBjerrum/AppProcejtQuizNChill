@@ -1,4 +1,4 @@
-package dk.appproject.quiznchill;
+package dk.appproject.quiznchill.dtos;
 
 import java.io.Serializable;
 import java.util.ArrayList;
