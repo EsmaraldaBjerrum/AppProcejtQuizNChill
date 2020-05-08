@@ -51,9 +51,11 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         setContentView(R.layout.activity_start_quiz);
 
         Bundle extras = getIntent().getExtras();
-        assert extras != null;
-        opponents = (Opponents) extras.getSerializable(Globals.Opponents);
-        user = (Player) extras.getSerializable(Globals.User);
+        if (extras != null)
+        {
+            opponents = (Opponents) extras.getSerializable(Globals.Opponents);
+            user = (Player) extras.getSerializable(Globals.User);
+        }
 
         setupConnectionToService();
         bindService(new Intent(StartQuizActivity.this, DatabaseService.class), serviceConnection, Context.BIND_AUTO_CREATE);
@@ -97,7 +99,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 List<Player> players = chosenOpponents;
                 if(!personal) {
                     players.add(user);
@@ -111,7 +112,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     private BroadcastReceiver quizReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             quizList.clear();
             quizzes = (personal ? db.PersonalQuizzes : db.APIQuizzes);
 
@@ -176,7 +176,6 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     public void onQuizClick(int position) {
         chosenQuiz = quizList.get(position);
         chosenQuestionsHashMaps = (List<Question>)quizzes.get(position).get(Globals.Questions);
-        quizAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -194,7 +193,11 @@ public class StartQuizActivity extends AppCompatActivity implements StringViewAd
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Globals.RequestCode);
+        if (requestCode == Globals.RequestCode && resultCode == RESULT_OK);
+        {
+            Intent intent = new Intent(StartQuizActivity.this, MenuActivity.class);
+            setResult(RESULT_CANCELED, intent);
             finish();
+        }
     }
 }

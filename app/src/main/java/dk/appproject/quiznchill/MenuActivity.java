@@ -229,7 +229,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == Globals.RequestCode)
+        if (requestCode == Globals.RequestCode && resultCode == RESULT_OK)
         {
             Toast.makeText(getApplicationContext(), "You have finished the quiz!", Toast.LENGTH_SHORT);
             //databaseService.getPlayersGames(user.getName());

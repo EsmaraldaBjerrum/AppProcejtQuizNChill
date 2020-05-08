@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private ApiService apiService;
     private DatabaseService databaseService;
     private ServiceConnection databaseServiceConnection;
-    private boolean bound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         LoginButton facebookLogin = findViewById(R.id.btnFacebookLogin);
 
         setupConnectionToDatabaseService();
+        bindService(new Intent(MainActivity.this, DatabaseService.class), databaseServiceConnection, Context.BIND_AUTO_CREATE);
 
         facebookLogin.setPermissions("email", "public_profile", "user_friends");
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnOK = findViewById(R.id.btnMainOK);
-       // btnOK.setEnabled(false);
+        btnOK.setEnabled(false);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    //userPlayer = new Player(user.getDisplayName());
-                   // databaseService.addUserToPlayerCollection(user.getDisplayName());
+                    userPlayer = new Player(user.getDisplayName());
+                    databaseService.addUserToPlayerCollection(user.getDisplayName());
                     Intent intent = new Intent(MainActivity.this, StartQuizActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
@@ -121,30 +121,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        bindToDataBaseService();
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(databaseServiceConnection);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unbindFromDatabaseService();
-    }
-
-    private void unbindFromDatabaseService() {
-        if(bound){
-            unbindService(databaseServiceConnection);
-            bound = false;
-            Log.d(TAG, "DbService unbinded");
-        }
-    }
-
-    private void bindToDataBaseService() {
-        bindService(new Intent(MainActivity.this, DatabaseService.class), databaseServiceConnection, Context.BIND_AUTO_CREATE);
-        bound = true;
-        Log.d(TAG, "Databaseservice binded");
-    }
 
     private void setupConnectionToDatabaseService() {
         databaseServiceConnection = new ServiceConnection() {
@@ -205,16 +186,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void updateUI(FirebaseUser user){
         TextView tvUser = findViewById(R.id.tvMainUser);
         tvUser.setText(user.getDisplayName());
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
 }
