@@ -176,7 +176,7 @@ public class DatabaseService extends Service {
                     public void onSuccess(DocumentReference documentReference) {
                         GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-
+                        activeQuizzes.add(GameId);
                         updateActiveQuizzes(playerNames);
                         sendBroadcast(Globals.GameID);
                     }
@@ -462,7 +462,7 @@ public class DatabaseService extends Service {
         db.collection(Globals.PLayers).document(userName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if(documentSnapshot.getData().get(Globals.ActiveQuizzes) != null){
+                /*if(documentSnapshot.getData().get(Globals.ActiveQuizzes) != null){
                     ArrayList<String> activeGames = (ArrayList<String>) documentSnapshot.getData().get("activeGames");
                     if(activeGames.size() > activeQuizzes.size()){
                         activeQuizzes = new ArrayList<>(activeGames);
@@ -475,7 +475,16 @@ public class DatabaseService extends Service {
                         finishedQuizzes = new ArrayList<>(finishedGames);
                         sendOutFinishedGameNotification();
                     }
-                }
+                }*/
+
+                notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
+                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setContentTitle(getString(R.string.app_name))
+                        .setContentText(getString(R.string.GameIsFinish))
+                        .build();
+                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
+                notificationManagerCompat.notify(1337,notification);
+                startForeground(NOTIFY_ID,notification);
             }
         });
     }
