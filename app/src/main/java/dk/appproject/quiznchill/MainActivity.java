@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         btnOK = findViewById(R.id.btnMainOK);
-        btnOK.setEnabled(false);
+       // btnOK.setEnabled(false);
 
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
                 else
                  */
                 {
-                    userPlayer = new Player(user.getDisplayName());
-                    databaseService.addUserToPlayerCollection(user.getDisplayName());
-                    Intent intent = new Intent(MainActivity.this, MenuActivity.class);
+                    //userPlayer = new Player(user.getDisplayName());
+                   // databaseService.addUserToPlayerCollection(user.getDisplayName());
+                    Intent intent = new Intent(MainActivity.this, StartQuizActivity.class);
                     intent.putExtra(Globals.Opponents, (Serializable) opponents);
                     intent.putExtra(Globals.User, (Serializable) userPlayer);
                     startActivity(intent);
