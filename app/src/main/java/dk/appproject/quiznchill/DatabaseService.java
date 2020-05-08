@@ -49,8 +49,8 @@ public class DatabaseService extends Service {
 
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
-    private ArrayList<String> activeQuizzes;
-    private ArrayList<String> finishedQuizzes;
+    private ArrayList<String> activeQuizzes = new ArrayList<>();
+    private ArrayList<String> finishedQuizzes = new ArrayList<>();
     public String GameId = null;
 
     public DatabaseService() {
