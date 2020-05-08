@@ -23,6 +23,9 @@ public class Game implements Serializable {
     @SerializedName("active")
     @Expose
     private boolean active;
+    @SerializedName("quizWinner")
+    @Expose
+    private List<String> winners;
 
     public Game(List<Player> players, String quizName, Player quizMaster, boolean active) {
         this.players = players;
@@ -69,4 +72,14 @@ public class Game implements Serializable {
     public void setGameId(String gameId) {
         this.gameId = gameId;
     }
+
+    public List<String> getWinners() {
+        return winners;
+    }
+
+    public void setWinners(List<String> winners) {
+        this.winners = winners;
+    }
+
+
 }

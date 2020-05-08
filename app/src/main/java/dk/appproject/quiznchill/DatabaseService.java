@@ -49,6 +49,8 @@ public class DatabaseService extends Service {
 
     public List<Map<String, Object>> APIQuizzes = new ArrayList<>();
     public List<Map<String, Object>> PersonalQuizzes = new ArrayList<>();
+    private ArrayList<String> activeQuizzes;
+    private ArrayList<String> finishedQuizzes;
     public String GameId = null;
 
     public DatabaseService() {
@@ -66,9 +68,6 @@ public class DatabaseService extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-
-
-       // sendOutStartGameNotification("De gode quiz");
        }
 
     @Override
@@ -77,7 +76,7 @@ public class DatabaseService extends Service {
     }
 
     // ----------------------------------------------------------------------------- //
-    // --------------------------------- QUIZZES ----------------------------------- //
+    // --------------------------- QUIZZES DB METHODS ------------------------------ //
     // ----------------------------------------------------------------------------- //
 
     public void addQuizToDb(List<Question> questions, String quizName, boolean personal)
@@ -168,8 +167,8 @@ public class DatabaseService extends Service {
 
         List<String> playerNames = getListOfPlayerNames(newGame);
         Map<String, Object> game = new HashMap<>();
-        game.put("game", newGame);
-        game.put("playerNames", playerNames);
+        game.put(Globals.Game, newGame);
+        game.put(Globals.PlayerNames, playerNames);
 
         db.collection(Globals.Games)
                 .add(game)
@@ -179,6 +178,7 @@ public class DatabaseService extends Service {
                         GameId = documentReference.getId();
                         Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
                         sendBroadcast(Globals.GameID);
+                        activeQuizzes.add(GameId);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -249,9 +249,11 @@ public class DatabaseService extends Service {
                            if(player.getName().equals(playerName)){
                                player.setCorrectAnswers(correctAnswers);
                                player.setFinishedQuiz(true);
+                               updatePlayersGameStatus(playerName,gameId);
+                               setGameAsFinish(gameId, playerArrayList);
                            }
                        }
-                       setPLayerStatus(gameId,playerArrayList);
+                       setPlayerStatus(gameId,playerArrayList);
                    }
                    else {
                        Log.d(TAG, "No such document");
@@ -264,7 +266,37 @@ public class DatabaseService extends Service {
         });
 
     }
-    private void setPLayerStatus(String gameId, ArrayList<Player> players){
+
+    private void updatePlayersGameStatus(String playerName, String gameId) {
+        finishedQuizzes.add(gameId);
+        activeQuizzes.remove(gameId);
+        db.collection(Globals.PLayers).document(playerName).update(Globals.FinishedQuizzes, finishedQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+        db.collection(Globals.PLayers).document(playerName).update(Globals.ActiveQuizzes,activeQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+    }
+
+    private void setPlayerStatus(String gameId, ArrayList<Player> players){
         db.collection(Globals.Games).document(gameId).update(Globals.GamePlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -279,12 +311,33 @@ public class DatabaseService extends Service {
                 });
     }
 
-    private ArrayList<Player> convertFirestorePlayersToArrayList(Object players){
-        Gson gson = new Gson();
-        String json = gson.toJson(players);
-        Type type = new TypeToken<ArrayList<Player>>(){}.getType();
-        return gson.fromJson(json,type);
+    public void addUserToPlayerCollection(final String playerName)
+    {
+        final PlayerPerson player = new PlayerPerson();
+        player.setName(playerName);
+        db.collection(Globals.PLayers).document(playerName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document.exists()){
+                        Log.d(TAG, "User is already added to database");
+                    }
+                    else{
+                        db.collection("Players").document(playerName).set(player);
+                        activeQuizzes = player.getActiveGames();
+                        finishedQuizzes = player.getFinishedGames();
+                        addListenerToUserDocument(playerName);
+                    }
+                }
+                else {
+                    Log.d(TAG, "Failed with: ", task.getException());
+                }
+            }
+        });
     }
+
+
 
     // -------------------------------------------------------------------------- //
     // ------------------------- BINDING AND BROADCAST--------------------------- //
@@ -317,12 +370,7 @@ public class DatabaseService extends Service {
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
 
-    public void sendOutStartGameNotification(String gameId) {
-        db.collection(Globals.Games).document(gameId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                if((boolean)((Map<String,Object>)documentSnapshot.getData().get(Globals.Game)).get(Globals.Active))
-                {
+    private void sendOutStartGameNotification() {
                     notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setContentTitle(getString(R.string.app_name))
@@ -332,26 +380,8 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
-            }
-        });
-        sendOutFinishNotificationIfTheGameIsFinished(gameId);
-    }
 
-    public void sendOutFinishNotificationIfTheGameIsFinished(final String gameId){
-        db.collection(Globals.Games).document(gameId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                Object players = ((Map<String, Object>) documentSnapshot.getData().get(Globals.Game)).get(Globals.Players);
-
-                ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
-
-                boolean quizPlayersFinish = false;
-                for (Player player : playerArrayList){
-                    quizPlayersFinish = player.isFinishedQuiz();
-                }
-
-                if(quizPlayersFinish){
-                    setGameAsFinish(gameId);
+    private void sendOutFinishedGameNotification(){
                     notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setContentTitle(getString(R.string.app_name))
@@ -361,11 +391,13 @@ public class DatabaseService extends Service {
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
                 }
-            }
-        });
-    }
 
-    private void setGameAsFinish(String gameId){
+    // ---------------------------------------------- //
+    // ---------------------- UTILS ----------------- //
+    // ---------------------------------------------- //
+
+        private void setGameAsFinish(String gameId, ArrayList<Player> players){
+        decideWinner(players, gameId);
         db.collection(Globals.Games).document(gameId).update(Globals.GameActive,false).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -378,5 +410,62 @@ public class DatabaseService extends Service {
                         Log.w(TAG, "Error updating document", e);
                     }
                 });
+    }
+
+    private void decideWinner(ArrayList<Player> players, String gameId) {
+        List<String> currentWinner = new ArrayList<>();
+        int currentHigh = 0;
+        for(Player player : players)
+        {
+            if(player.getCorrectAnswers() > currentHigh){
+                currentWinner.clear();
+                currentHigh = player.getCorrectAnswers();
+                currentWinner.add(player.getName());
+            }else if(player.getCorrectAnswers() == currentHigh){
+                currentWinner.add(player.getName());
+            }
+        }
+
+        db.collection(Globals.Games).document(gameId).update(Globals.Winners,currentWinner).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "DocumentSnapshot succesfully updated!");
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error updating document", e);
+                    }
+                });
+
+    }
+
+    private void addListenerToUserDocument(String userName) {
+        db.collection(Globals.PLayers).document(userName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                if(documentSnapshot.getData().get(Globals.ActiveQuizzes) != null){
+                    ArrayList<String> activeGames = (ArrayList<String>) documentSnapshot.getData().get("activeGames");
+                    if(activeGames.size() > activeQuizzes.size()){
+                        sendOutStartGameNotification();
+                    }
+                }
+                if (documentSnapshot.getData().get(Globals.FinishedQuizzes) != null) {
+                    ArrayList<String> finishedGames = (ArrayList<String>) documentSnapshot.getData().get("finishedGames");
+                    if(finishedGames.size() > finishedQuizzes.size()){
+                        sendOutFinishedGameNotification();
+                    }
+                }
+            }
+        });
+    }
+
+    private ArrayList<Player> convertFirestorePlayersToArrayList(Object players){
+        Gson gson = new Gson();
+        String json = gson.toJson(players);
+        Type type = new TypeToken<ArrayList<Player>>(){}.getType();
+        return gson.fromJson(json,type);
     }
 }

@@ -28,9 +28,11 @@ public class Globals {
 
     public static final String Players = "players";
 
+    public static final String PLayers = "Players";
+
     public static final String PlayerNames = "playerNames";
 
-    public static final String Active = "active";
+    public static final String ActiveQuizzes = "activeGames";
 
     public static final String GamePlayers = "game.players";
 
@@ -43,4 +45,8 @@ public class Globals {
     public static final String WrongAnswerTwo = "Wrong Answer Two";
 
     public static final int RequestCode = 1;
+
+    public static final String FinishedQuizzes = "finishedGames";
+
+    public static final String Winners = "winners";
 }
