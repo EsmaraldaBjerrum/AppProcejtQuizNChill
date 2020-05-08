@@ -41,8 +41,10 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
 
             checkBox.setChecked(!checkBox.isChecked());
 
-            if (isQuizzes)
+            if (isQuizzes) {
                 onClickListener.onQuizClick(getAdapterPosition());
+
+            }
             else
                 onClickListener.onFriendClick(getAdapterPosition(), checkBox.isChecked());
         }
@@ -65,12 +67,16 @@ public class StringViewAdapter extends RecyclerView.Adapter<StringViewAdapter.Vi
 
         //Inspired by https://stackoverflow.com/questions/39127008/how-can-i-select-only-one-checkbox-in-recyclerview-and-notifydataset-changed
         holder.checkBox.setChecked(quizSelectedPosition == position);
-        holder.checkBox.setOnCheckedChangeListener(null);
 
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                quizSelectedPosition = holder.getAdapterPosition();
+               if (isChecked)
+                   quizSelectedPosition = holder.getAdapterPosition();
+
+               else if (quizSelectedPosition == holder.getAdapterPosition())
+                   quizSelectedPosition = -1;
+
             }
         });
     }

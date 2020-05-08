@@ -147,6 +147,8 @@ public class QuestionActivity extends AppCompatActivity implements View.OnClickL
         }else {
             databaseService.updateGameStatus(currentQuizId, currentPlayer.getName(), correctAnswers);
             //EVT broadcast?
+            Intent intent = new Intent(QuestionActivity.this, StartQuizActivity.class);
+            setResult(RESULT_CANCELED, intent);
             finish();
             // TODO: 07-05-2020 Hop tilbage til menu 
         }
