@@ -354,8 +354,6 @@ public class DatabaseService extends Service {
         });
     }
 
-
-
     // -------------------------------------------------------------------------- //
     // ------------------------- BINDING AND BROADCAST--------------------------- //
     // -------------------------------------------------------------------------- //
@@ -382,38 +380,26 @@ public class DatabaseService extends Service {
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
-
     // ------------------------------------------------------------- //
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
 
-    private void sendOutStartGameNotification() {
+    private void sendOutGameNotification(){
                     notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                             .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setContentTitle(getString(R.string.app_name))
-                            .setContentText(getString(R.string.YouGotAGame))
+                            .setContentText(getString(R.string.NotificationText))
                             .build();
                     NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
                     notificationManagerCompat.notify(1337,notification);
                     startForeground(NOTIFY_ID,notification);
-                }
-
-    private void sendOutFinishedGameNotification(){
-                    notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                            .setContentTitle(getString(R.string.app_name))
-                            .setContentText(getString(R.string.GameIsFinish))
-                            .build();
-                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
-                    notificationManagerCompat.notify(1337,notification);
-                    startForeground(NOTIFY_ID,notification);
-                }
+     }
 
     // ---------------------------------------------- //
     // ---------------------- UTILS ----------------- //
     // ---------------------------------------------- //
 
-        private void setGameAsFinish(String gameId, ArrayList<Player> players){
+     private void setGameAsFinish(String gameId, ArrayList<Player> players){
         decideWinner(players, gameId);
         db.collection(Globals.Games).document(gameId).update(Globals.GameActive,false).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -461,30 +447,18 @@ public class DatabaseService extends Service {
     private void addListenerToUserDocument(String userName) {
         db.collection(Globals.PLayers).document(userName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                /*if(documentSnapshot.getData().get(Globals.ActiveQuizzes) != null){
-                    ArrayList<String> activeGames = (ArrayList<String>) documentSnapshot.getData().get("activeGames");
-                    if(activeGames.size() > activeQuizzes.size()){
-                        activeQuizzes = new ArrayList<>(activeGames);
-                        sendOutStartGameNotification();
-                    }
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
                 }
-                if (documentSnapshot.getData().get(Globals.FinishedQuizzes) != null) {
-                    ArrayList<String> finishedGames = (ArrayList<String>) documentSnapshot.getData().get("finishedGames");
-                    if(finishedGames.size() > finishedQuizzes.size()){
-                        finishedQuizzes = new ArrayList<>(finishedGames);
-                        sendOutFinishedGameNotification();
-                    }
-                }*/
 
-                notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText(getString(R.string.GameIsFinish))
-                        .build();
-                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(DatabaseService.this);
-                notificationManagerCompat.notify(1337,notification);
-                startForeground(NOTIFY_ID,notification);
+                if (snapshot != null && snapshot.exists()) {
+                    sendOutGameNotification();
+                } else {
+                    Log.d(TAG, "Current data: null");
+                }
             }
         });
     }

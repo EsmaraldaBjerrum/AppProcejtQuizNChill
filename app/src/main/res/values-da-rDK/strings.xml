@@ -33,4 +33,5 @@
     <string name="WaitingForOpponentsToBeFinish">Venter på at modstandere er færdige</string>
     <string name="FriendsAreStillPlaying">Dine venner spiller stadigvæk</string>
     <string name="forkert_svar_hint2">Second wrong answer</string>
+    <string name="NotificationText">Der er sket noget i Quiz\'N\'Chill. Tjek det ud!</string>
 </resources>
