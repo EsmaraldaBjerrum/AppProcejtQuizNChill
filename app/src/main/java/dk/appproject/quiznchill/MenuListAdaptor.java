@@ -91,7 +91,7 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
         }else{
             //Setting the name of the winner or stating multiple wiiners
             if(games.get(position).getWinners().size() == 1) {
-                holder.gameStatus.setText(R.string.winner + games.get(position).getWinners().get(0));
+                holder.gameStatus.setText( R.string.winner + games.get(position).getWinners().get(0));
             }else{
                 holder.gameStatus.setText(R.string.multipleWinners);
             }

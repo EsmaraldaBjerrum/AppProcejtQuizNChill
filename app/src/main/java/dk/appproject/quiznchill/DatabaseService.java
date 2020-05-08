@@ -188,7 +188,7 @@ public class DatabaseService extends Service {
                     }
                 });
     }
-
+    // In this method activequizzes is updated at firestore. Inspired by
     private void updateActiveQuizzes(List<String> playerNamesInCurrentGame){
         for(String playerName : playerNamesInCurrentGame) {
             db.collection(Globals.PLayers).document(playerName).update(Globals.ActiveQuizzes, activeQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -249,6 +249,7 @@ public class DatabaseService extends Service {
                 });
     }
 
+    // Here the game status is updated. Inspired by https://firebase.google.com/docs/firestore/manage-data/add-data
     public void updateGameStatus(final String gameId, final String playerName, final int correctAnswers){
         db.collection(Globals.Games).document(gameId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -257,10 +258,12 @@ public class DatabaseService extends Service {
                    DocumentSnapshot document = task.getResult();
 
                    if(document.exists()){
+                       // Here the players of the game is fetched from the firestore
                        Object players = ((Map<String, Object>) document.getData().get(Globals.Game)).get(Globals.Players);
 
                       ArrayList<Player> playerArrayList = convertFirestorePlayersToArrayList(players);
                       int isAllFinished = 0;
+                      // Here the player in playerArrayList is updated with correctanswers and finishedquiz, if is the current player.
                        for(Player player : playerArrayList){
                            if(player.getName().equals(playerName)){
                                player.setCorrectAnswers(correctAnswers);
@@ -294,6 +297,7 @@ public class DatabaseService extends Service {
     // --------------------------------------------------------------//
 
     private void updatePlayersGameStatus(String playerName, String gameId) {
+        // Here the players finished quizzes is updated
         db.collection(Globals.PLayers).document(playerName).update(Globals.FinishedQuizzes, finishedQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -306,6 +310,7 @@ public class DatabaseService extends Service {
                         Log.w(TAG, "Error updating document", e);
                     }
                 });
+        // Here the players activequizzes is updated
         db.collection(Globals.PLayers).document(playerName).update(Globals.ActiveQuizzes,activeQuizzes).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -320,6 +325,7 @@ public class DatabaseService extends Service {
                 });
     }
 
+    // Here the players status is updated
     private void setPlayerStatus(String gameId, ArrayList<Player> players){
         db.collection(Globals.Games).document(gameId).update(Globals.GamePlayers,players).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -335,6 +341,7 @@ public class DatabaseService extends Service {
                 });
     }
 
+    // Here the user is added to player database if it isn't added to the database already
     public void addUserToPlayerCollection(final String playerName)
     {
         final PlayerPerson player = new PlayerPerson();
@@ -394,6 +401,7 @@ public class DatabaseService extends Service {
     // ---------------------- NOTIFICATIONS ------------------------ //
     // ------------------------------------------------------------- //
 
+    // This method sends out notifications
     private void sendOutGameNotification(){
         notification = new NotificationCompat.Builder(DatabaseService.this, ChannelId)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -409,6 +417,7 @@ public class DatabaseService extends Service {
     // ---------------------- UTILS ----------------- //
     // ---------------------------------------------- //
 
+    // Here the game is updated as inactive in firestore
      private void setGameAsFinish(String gameId, ArrayList<Player> players){
         decideWinner(players, gameId);
         db.collection(Globals.Games).document(gameId).update(Globals.GameActive,false).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -425,6 +434,7 @@ public class DatabaseService extends Service {
                 });
     }
 
+    // Here the winner of the game is decided
     private void decideWinner(ArrayList<Player> players, String gameId) {
         List<String> currentWinner = new ArrayList<>();
         int currentHigh = 0;
@@ -439,6 +449,7 @@ public class DatabaseService extends Service {
             }
         }
 
+        //Here the database is updated with correct winner. Inspired by https://firebase.google.com/docs/firestore/manage-data/add-data
         db.collection(Globals.Games).document(gameId).update(Globals.Winners,currentWinner).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -454,6 +465,7 @@ public class DatabaseService extends Service {
 
     }
 
+    // Here the listner is added to the player document
     private void addListenerToUserDocument(String userName) {
         db.collection(Globals.PLayers).document(userName).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -463,7 +475,7 @@ public class DatabaseService extends Service {
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
-
+                // If there is a change in the document the player gets a notification
                 if (snapshot != null && snapshot.exists()) {
                     sendOutGameNotification();
                 } else {

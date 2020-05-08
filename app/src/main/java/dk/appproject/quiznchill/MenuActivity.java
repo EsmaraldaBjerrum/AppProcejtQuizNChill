@@ -122,7 +122,10 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
             //Check if user i quiz master
             if(games.get(position).getQuizMaster() != null){
                 if(games.get(position).getQuizMaster().equals(user.getName())){
-                    Toast.makeText(getApplicationContext(), R.string.FriendsAreStillPlaying, Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), R.string.FriendsAreStillPlaying, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    databaseService.getQuizForGame(games.get(position).getQuizName());
                 }
             }else{
                 //Iteration through players to find current user
@@ -231,8 +234,7 @@ public class MenuActivity extends AppCompatActivity implements MenuListAdaptor.O
 
         if (requestCode == Globals.RequestCode && resultCode == RESULT_OK)
         {
-            Toast.makeText(getApplicationContext(), "You have finished the quiz!", Toast.LENGTH_SHORT);
-            //databaseService.getPlayersGames(user.getName());
+            Toast.makeText(getApplicationContext(), R.string.YouHaveFinishedTheQuiz, Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -37,4 +37,7 @@
     <string name="playGamePrompt">Spil!</string>
     <string name="winner">"Vinder: "</string>
     <string name="multipleWinners">Mere end én vinder!</string>
+    <string name="YouHaveFinishedTheQuiz">Du har afsluttet quizzen!</string>
+    <string name="QuestionAdded">Question is added to the quiz</string>
+    <string name="QuizIsAdded">The quiz is added</string>
 </resources>
