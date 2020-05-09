@@ -1,6 +1,7 @@
 package dk.appproject.quiznchill.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -196,5 +197,12 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(FirebaseUser user){
         TextView tvUser = findViewById(R.id.tvMainUser);
         tvUser.setText(user.getDisplayName());
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }
