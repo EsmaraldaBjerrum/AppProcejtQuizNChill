@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:background="@color/colorHeadline"
-        android:text="@string/btnStartQuiz"
+        android:text="@string/StartQuiz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtMenuTitle" />
@@ -40,7 +40,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:background="@color/colorHeadline"
-        android:text="@string/btnCreateQuiz"
+        android:text="@string/CreateQuiz"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnMenuStartQuiz" />
@@ -50,7 +50,7 @@
         android:layout_width="224dp"
         android:layout_height="58dp"
         android:layout_marginTop="40dp"
-        android:text="@string/appTitle"
+        android:text="@string/Name"
         android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"

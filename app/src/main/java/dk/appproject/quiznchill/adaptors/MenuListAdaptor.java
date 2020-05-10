@@ -86,7 +86,7 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
                             holder.gameStatus.setText(R.string.WaitingForOpponentsToBeFinish);
                         }else{
                             holder.statusImage.setImageResource(R.drawable.startgame_icon);
-                            holder.gameStatus.setText(R.string.playGamePrompt);
+                            holder.gameStatus.setText(R.string.PlayGame);
                         }
                     }
                 }
@@ -96,7 +96,7 @@ public class MenuListAdaptor extends RecyclerView.Adapter<MenuListAdaptor.ListVi
             if(games.get(position).getWinners().size() == 1) {
                 holder.gameStatus.setText(games.get(position).getWinners().get(0));
             }else{
-                holder.gameStatus.setText(R.string.multipleWinners);
+                holder.gameStatus.setText(R.string.MultipleWinners);
             }
             //Setting image
             if(userIsQuizMaster){

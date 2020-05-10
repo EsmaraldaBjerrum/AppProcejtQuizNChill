@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">QuizNChill</string>
-    <string name="facebook_app_id">521035771914571</string>
-    <string name="appTitle">Quiz N\' Chill</string>
-    <string name="btnStartQuiz">Start Quiz!</string>
-    <string name="btnCreateQuiz">Opret ny quiz!</string>
-    <string name="questionHeader">"Spørgsmål: "</string>
+    <string name="StartQuiz">Start Quiz!</string>
+    <string name="CreateQuiz">Opret ny quiz!</string>
+    <string name="QuestionHeader">"Spørgsmål: "</string>
     <string name="AddedQuestionToast">Spørgsmålet er tilføjet</string>
-    <string name="opret_ny_quiz">Opret ny quiz</string>
-    <string name="quiz_navn">Quiz navn</string>
-    <string name="forkert_svar_hint">Forkert svar 1</string>
-    <string name="det_rigtige_svar_hint">Korrekt svar</string>
-    <string name="tilf_j_sp_rgsm_l">Tilføj spørgsmål</string>
-    <string name="sp_rgsm_l">Spørgsmål</string>
-    <string name="ok">OK</string>
-    <string name="quiz_navn_hint" translatable="false">Quiz navn</string>
-    <string name="sp_rgsm_l_hint">Spørgsmål</string>
-    <string name="rigtig_svar">Korrekt svar</string>
-    <string name="forkert_svar">Forkert svar</string>
-    <string name="v_du_tabte_quizzen">Du tabte quizzen</string>
-    <string name="yay_du_vandt_quizzen">Du vandt quizzen!</string>
+    <string name="CreateNewQuiz">Opret ny quiz</string>
+    <string name="QuizName">Quiz navn</string>
+    <string name="FirstWrongAnswer">Første forkerte svar</string>
+    <string name="AddQuestion">Tilføj spørgsmål</string>
+    <string name="Question">Spørgsmål</string>
+    <string name="OK">OK</string>
+    <string name="CorrectAnswer">Korrekt svar</string>
+    <string name="WrongAnswer">Forkert svar</string>
+    <string name="YouLostQuiz">Du tabte quizzen</string>
+    <string name="YouWonQuiz">Du vandt quizzen!</string>
     <string name="YouGotAGame">Du har en quiz</string>
     <string name="Welcome" translatable="false">"Velkommen til "</string>
-    <string name="Name">QUIZ n CHILL</string>
     <string name="ChooseQuiz">Vælg quiz</string>
     <string name="LetsGo">Start!</string>
     <string name="ChooseOpponents">Vælg modstandere</string>
@@ -32,12 +25,12 @@
     <string name="GameIsFinish">Quizzen er slut</string>
     <string name="WaitingForOpponentsToBeFinish">Modstandere spiller stadig</string>
     <string name="FriendsAreStillPlaying">Dine venner spiller stadigvæk</string>
-    <string name="forkert_svar_hint2">Forkert svar 2</string>
-    <string name="NotificationText">Der er sket noget i Quiz\'N\'Chill. Tjek det ud!</string>
-    <string name="playGamePrompt">Spil!</string>
-    <string name="winner">"Vinder: "</string>
-    <string name="multipleWinners">Mere end én vinder!</string>
+    <string name="SecondWrongAnswer">Andet forkerte svar</string>
+    <string name="NotificationText">Der er sket noget i QUIZ \'n\' CHILL. Tjek det ud!</string>
+    <string name="PlayGame">Spil!</string>
+    <string name="Winner">"Vinder: "</string>
+    <string name="MultipleWinners">Mere end én vinder!</string>
     <string name="YouHaveFinishedTheQuiz">Du har afsluttet quizzen!</string>
     <string name="QuestionAdded">Question is added to the quiz</string>
-    <string name="QuizIsAdded">The quiz is added</string>
+    <string name="QuizIsAdded">Quizzen er tilføjet</string>
 </resources>
