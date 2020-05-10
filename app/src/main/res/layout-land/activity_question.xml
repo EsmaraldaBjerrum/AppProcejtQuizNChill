@@ -14,7 +14,7 @@
         android:layout_marginStart="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="10dp"
-        android:text="@string/questionHeader"
+        android:text="@string/QuestionHeader"
         android:textColor="@color/colorHeadline"
         app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
