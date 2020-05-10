@@ -37,7 +37,7 @@
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"
+            android:value="521035771914571"
             tools:replace="android:value" />
 
         <activity
@@ -53,7 +53,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="@string/fb_login_protocol_scheme" />
+                <data android:scheme="fb521035771914571" />
             </intent-filter>
         </activity>
 
