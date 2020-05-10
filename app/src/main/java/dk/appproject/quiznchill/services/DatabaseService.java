@@ -133,7 +133,6 @@ public class DatabaseService extends Service {
     public Map<String, Object> QuizFromMenu = new HashMap<>();
     public void getQuizForGame(String quizName){
         QuizFromMenu.clear();
-        //Sørg for at den sender en quiz ud til MEnu
         db.collection(Globals.APIQuizzes).whereEqualTo(Globals.QuizName, quizName).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
